@@ -1,4 +1,6 @@
-import { all, fork, takeLatest, takeEvery, put, delay, call } from 'redux-saga/effects';
+import {
+  all, fork, takeLatest, takeEvery, put, delay, call,
+} from 'redux-saga/effects';
 import axios from 'axios';
 import {
   ADD_POST_FAILURE,
@@ -27,9 +29,15 @@ import {
   LIKE_POST_REQUEST,
   UNLIKE_POST_SUCCESS,
   UNLIKE_POST_FAILURE,
-  UNLIKE_POST_REQUEST, RETWEET_REQUEST, RETWEET_FAILURE, RETWEET_SUCCESS,
+  UNLIKE_POST_REQUEST,
+  RETWEET_REQUEST,
+  RETWEET_FAILURE,
+  RETWEET_SUCCESS,
+  REMOVE_POST_SUCCESS,
+  REMOVE_POST_FAILURE,
+  REMOVE_POST_REQUEST,
 } from '../reducers/post';
-import {ADD_POST_TO_ME} from "../reducers/user";
+import {ADD_POST_TO_ME, REMOVE_POST_OF_ME} from '../reducers/user';
 
 function addPostAPI(postData) {
   return axios.post('/post', postData, { // postData에 게시글 들어있음
@@ -87,7 +95,7 @@ function* watchLoadMainPosts() {
 // ===================================================================================
 
 function loadHashtagPostsAPI(tag) {
-  return axios.get(`/hashtag/${tag}`); // 서버에 요청
+  return axios.get(`/hashtag/${encodeURIComponent(tag)}`); // 서버에 요청
   // withCredentials : true는 붙이지 않아도 됨. 로그인하지 않는 사람도 게시글은 볼 수 있음.
 }
 
@@ -112,7 +120,7 @@ function* watchLoadHashtagPosts() {
 // ==========================================================================================
 
 function loadUserPostsAPI(id) {
-  return axios.get(`/user/${id}/posts`); // 서버에 요청
+  return axios.get(`/user/${id || 0}/posts`); // 서버에 요청
   // withCredentials : true는 붙이지 않아도 됨. 로그인하지 않는 사람도 게시글은 볼 수 있음.
 }
 
@@ -138,8 +146,7 @@ function* watchLoadUserPosts() {
 // ==========================================================================================
 
 function addCommentAPI(data) {
-  return axios.post(`/post/${data.postId}/comment`, { content: data.content }, {
-    withCredentials: true,});
+  return axios.post(`/post/${data.postId}/comment`, { content: data.content }, { withCredentials: true });
 }
 
 function* addComment(action) { // action : request에 대한 action
@@ -167,7 +174,7 @@ function* watchAddComment() {
 // ==========================게시글 불러오기 ====================================================
 
 function loadCommentsAPI(postId) {
-  return axios.get(`/post/${postId}/comments` );
+  return axios.get(`/post/${postId}/comments`);
 }
 
 function* loadComments(action) { // action : request에 대한 action
@@ -197,7 +204,7 @@ function* watchLoadComments() {
 function uploadImagesAPI(formData) {
   // 서버에 요청을 보내는 부분
   return axios.post('/post/images', formData, {
-    withCredentials: true, //로그인한 사용자만 이미지 올릴 수 있음.
+    withCredentials: true, // 로그인한 사용자만 이미지 올릴 수 있음.
   });
 }
 
@@ -207,7 +214,7 @@ function* uploadImages(action) { // 남의 정보도 불러올 수 있게 수정
     const result = yield call(uploadImagesAPI, action.data);
     yield put({ // put은 dispatch 동일
       type: UPLOAD_IMAGES_SUCCESS,
-      data: result.data,// result.data: 서버쪽에서 저정된 이미지 주소
+      data: result.data, // result.data: 서버쪽에서 저정된 이미지 주소
     });
   } catch (e) { // loginAPI 실패
     console.error(e);
@@ -227,7 +234,7 @@ function* watchUploadImages() {
 function likePostAPI(postId) {
   // 서버에 요청을 보내는 부분
   return axios.post(`/post/${postId}/like`, {}, {
-    withCredentials: true, //로그인한 사용자만 이미지 올릴 수 있음.
+    withCredentials: true, // 로그인한 사용자만 이미지 올릴 수 있음.
   });
 }
 
@@ -240,7 +247,7 @@ function* likePost(action) { // 남의 정보도 불러올 수 있게 수정을 
       data: {
         postId: action.data,
         userId: result.data.userId,
-      }
+      },
     });
   } catch (e) { // loginAPI 실패
     console.error(e);
@@ -260,7 +267,7 @@ function* watchLikePost() {
 function unlikePostAPI(postId) {
   // 서버에 요청을 보내는 부분
   return axios.delete(`/post/${postId}/like`, {
-    withCredentials: true, //로그인한 사용자만 이미지 올릴 수 있음.
+    withCredentials: true, // 로그인한 사용자만 이미지 올릴 수 있음.
   });
 }
 
@@ -292,8 +299,8 @@ function* watchUnlikePost() {
 
 function retweetAPI(postId) {
   // 서버에 요청을 보내는 부분
-  return axios.post(`/post/${postId}/retweet`, {},{ //post로 요청할 때는 data가 없더라도 빈 객체라도 넣어주어야 함.
-    withCredentials: true, //로그인한 사용자만 이미지 올릴 수 있음.
+  return axios.post(`/post/${postId}/retweet`, {}, { // post로 요청할 때는 data가 없더라도 빈 객체라도 넣어주어야 함.
+    withCredentials: true, // 로그인한 사용자만 이미지 올릴 수 있음.
   });
 }
 
@@ -319,6 +326,40 @@ function* watchRetweet() {
   yield takeLatest(RETWEET_REQUEST, retweet);
 }
 
+// =======================================================================
+
+function removePostAPI(postId) {
+  // 서버에 요청을 보내는 부분
+  return axios.delete(`/post/${postId}`, { // post로 요청할 때는 data가 없더라도 빈 객체라도 넣어주어야 함.
+    withCredentials: true, // 로그인한 사용자만 이미지 올릴 수 있음.
+  });
+}
+
+function* removePost(action) { // 남의 정보도 불러올 수 있게 수정을 해줘야 함.
+  try {
+    // yield call(removePostAPI);
+    const result = yield call(removePostAPI, action.data);
+    yield put({ // put은 dispatch 동일
+      type: REMOVE_POST_SUCCESS,
+      data: result.data,
+    });
+    yield put({
+      type: REMOVE_POST_OF_ME,
+      data: result.data,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: REMOVE_POST_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchRemovePost() {
+  yield takeLatest(REMOVE_POST_REQUEST, removePost);
+}
+
 export default function* postSaga() {
   yield all([
     fork(watchLoadMainPosts),
@@ -331,5 +372,6 @@ export default function* postSaga() {
     fork(watchLikePost),
     fork(watchUnlikePost),
     fork(watchRetweet),
+    fork(watchRemovePost),
   ]);
 }

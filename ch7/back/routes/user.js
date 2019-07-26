@@ -118,10 +118,12 @@ router.post('/login', (req, res, next) => { // POST /api/user/login
 router.get('/:id/followings', isLoggedIn, async (req, res, next) => { // /api/user/:id/followings
   try {
     const user = await db.User.findOne({
-      where: { id: parseInt(req.params.id, 10)}
+      where: { id: parseInt( req.params.id,10 ) || (req.user && req.user.id) || 0 },
     });
     const followers = await user.getFollowings({
       attributes: ['id', 'nickname'],
+      limit: parseInt(req.query.limit, 10),
+      offset: parseInt(req.query.offset, 10),
     });
     res.json(followers);
   } catch (e) {
@@ -133,10 +135,12 @@ router.get('/:id/followings', isLoggedIn, async (req, res, next) => { // /api/us
 router.get('/:id/followers', isLoggedIn, async (req, res, next) => { // /api/user/:id/follower
   try {
     const user = await db.User.findOne({
-      where: { id: parseInt(req.params.id, 10)}
-    });
+      where: { id: parseInt( req.params.id,10 ) || (req.user && req.user.id) || 0 },
+    }); // req.params.id가 문자열 '0'이면 뒷부분이 실행되지 않음. 따라서 parseInt를 사용함.
     const followers = await user.getFollowers({
       attributes: ['id', 'nickname'],
+      limit: parseInt(req.query.limit, 10),
+      offset: parseInt(req.query.offset, 10),
     });
     res.json(followers);
   } catch (e) {
@@ -187,7 +191,7 @@ router.get('/:id/posts', async (req, res, next) => {
   try {
     const posts = await db.Post.findAll({
       where: {
-        UserId: parseInt( req.params.id,10 ),
+        UserId: parseInt( req.params.id,10 ) || (req.user && req.user.id) || 0, // UserId가 0이면 나의 아이디로 간주
         RetweetId: null,
       },
       include: [{

@@ -285,7 +285,7 @@ var ImagesZoom = function ImagesZoom(_ref) {
       color: 'white',
       fontSize: '15px'
     }
-  }, currentSlide + 1, " / ", images.length))));
+  }, currentSlide + 1, ' ', "/", images.length))));
 };
 
 ImagesZoom.propTypes = {
@@ -535,6 +535,14 @@ var PostCard = function PostCard(_ref) {
       });
     };
   }, []);
+  var onRemovePost = Object(react__WEBPACK_IMPORTED_MODULE_1__["useCallback"])(function (userId) {
+    return function () {
+      dispatch({
+        type: _reducers_post__WEBPACK_IMPORTED_MODULE_6__["REMOVE_POST_REQUEST"],
+        data: userId
+      });
+    };
+  }, []);
   return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(antd__WEBPACK_IMPORTED_MODULE_2__["Card"], {
     key: +post.createdAt,
     cover: post.Images && post.Images[0] && react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_PostImages__WEBPACK_IMPORTED_MODULE_7__["default"], {
@@ -557,7 +565,8 @@ var PostCard = function PostCard(_ref) {
     }), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(antd__WEBPACK_IMPORTED_MODULE_2__["Popover"], {
       key: "ellipsis",
       content: react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(antd__WEBPACK_IMPORTED_MODULE_2__["Button"].Group, null, me && post.UserId === me.id ? react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(antd__WEBPACK_IMPORTED_MODULE_2__["Button"], null, "\uC218\uC815"), react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(antd__WEBPACK_IMPORTED_MODULE_2__["Button"], {
-        type: "danger"
+        type: "danger",
+        onClick: onRemovePost(post.id)
       }, "\uC0AD\uC81C")) : react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(antd__WEBPACK_IMPORTED_MODULE_2__["Button"], null, "\uC2E0\uACE0"))
     }, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(antd__WEBPACK_IMPORTED_MODULE_2__["Icon"], {
       type: "ellipsis"
@@ -587,8 +596,7 @@ var PostCard = function PostCard(_ref) {
     title: post.Retweet.User.nickname,
     description: react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_PostCardContent__WEBPACK_IMPORTED_MODULE_8__["default"], {
       postData: post.Retweet.content
-    }) // a tag x -> Link
-
+    })
   })) : react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(antd__WEBPACK_IMPORTED_MODULE_2__["Card"].Meta, {
     avatar: react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(next_link__WEBPACK_IMPORTED_MODULE_3___default.a, {
       href: {
@@ -750,9 +758,9 @@ var PostForm = function PostForm() {
 
     var formData = new FormData();
     imagePaths.forEach(function (i) {
-      formData.append("image", i); // 이미지 넣는 곳
+      formData.append('image', i); // 이미지 넣는 곳
     });
-    formData.append("content", text); // 컨텐트 넣는 곳
+    formData.append('content', text); // 컨텐트 넣는 곳
 
     dispatch({
       type: _reducers_post__WEBPACK_IMPORTED_MODULE_4__["ADD_POST_REQUEST"],
@@ -6175,7 +6183,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- //서버사이드 렌더링에 필수요소
+ // 서버사이드 렌더링에 필수요소
 
 
 
@@ -6249,31 +6257,28 @@ function () {
             }
 
             if (!state.user.me) {
-              _context.next = 14;
-              break;
+              ctx.store.dispatch({
+                type: _reducers_user__WEBPACK_IMPORTED_MODULE_15__["LOAD_USER_REQUEST"]
+              });
             }
-
-            ctx.store.dispatch({
-              type: _reducers_user__WEBPACK_IMPORTED_MODULE_15__["LOAD_USER_REQUEST"]
-            });
 
             if (!Component.getInitialProps) {
-              _context.next = 14;
+              _context.next = 13;
               break;
             }
 
-            _context.next = 13;
+            _context.next = 12;
             return Component.getInitialProps(ctx);
 
-          case 13:
+          case 12:
             pageProps = _context.sent;
 
-          case 14:
+          case 13:
             return _context.abrupt("return", {
               pageProps: pageProps
             });
 
-          case 15:
+          case 14:
           case "end":
             return _context.stop();
         }
@@ -6289,7 +6294,14 @@ function () {
 
 var configureStore = function configureStore(initialState, options) {
   var sagaMiddleware = redux_saga__WEBPACK_IMPORTED_MODULE_9___default()();
-  var middlewares = [sagaMiddleware];
+  var middlewares = [sagaMiddleware, function (store) {
+    return function (next) {
+      return function (action) {
+        console.log(action);
+        next(action);
+      };
+    };
+  }];
   var enhancer =  false // 실제 서비스
   ? undefined : Object(redux__WEBPACK_IMPORTED_MODULE_7__["compose"])(redux__WEBPACK_IMPORTED_MODULE_7__["applyMiddleware"].apply(void 0, middlewares), !options.isServer && typeof window.__REDUX_DEVTOOLS_EXTENSION__ !== 'undefined' ? window.__REDUX_DEVTOOLS_EXTENSION__() : function (f) {
     return f;
@@ -6522,6 +6534,11 @@ var Signup = function Signup() {
     setTermError(false);
     setTerm(e.target.checked);
   }, []);
+
+  if (me) {
+    return null;
+  }
+
   return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(antd__WEBPACK_IMPORTED_MODULE_2__["Form"], {
     onSubmit: onSubmit,
     style: {
@@ -6930,6 +6947,25 @@ var REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
         return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
       }
 
+    case REMOVE_POST_REQUEST:
+      {
+        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+      }
+
+    case REMOVE_POST_SUCCESS:
+      {
+        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+          mainPosts: state.mainPosts.filter(function (v) {
+            return v.id !== action.data;
+          })
+        });
+      }
+
+    case REMOVE_POST_FAILURE:
+      {
+        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+      }
+
     default:
       {
         return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
@@ -6943,7 +6979,7 @@ var REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
 /*!**************************!*\
   !*** ./reducers/user.js ***!
   \**************************/
-/*! exports provided: initialState, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, SIGN_UP_FAILURE, LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_IN_FAILURE, LOAD_USER_REQUEST, LOAD_USER_SUCCESS, LOAD_USER_FAILURE, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE, LOAD_FOLLOW_REQUEST, LOAD_FOLLOW_SUCCESS, LOAD_FOLLOW_FAILURE, LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWERS_FAILURE, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS, LOAD_FOLLOWINGS_FAILURE, FOLLOW_USER_REQUEST, FOLLOW_USER_SUCCESS, FOLLOW_USER_FAILURE, UNFOLLOW_USER_REQUEST, UNFOLLOW_USER_SUCCESS, UNFOLLOW_USER_FAILURE, REMOVE_FOLLOWER_REQUEST, REMOVE_FOLLOWER_SUCCESS, REMOVE_FOLLOWER_FAILURE, EDIT_NICKNAME_REQUEST, EDIT_NICKNAME_SUCCESS, EDIT_NICKNAME_FAILURE, ADD_POST_TO_ME, default */
+/*! exports provided: initialState, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, SIGN_UP_FAILURE, LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_IN_FAILURE, LOAD_USER_REQUEST, LOAD_USER_SUCCESS, LOAD_USER_FAILURE, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, LOG_OUT_FAILURE, LOAD_FOLLOW_REQUEST, LOAD_FOLLOW_SUCCESS, LOAD_FOLLOW_FAILURE, LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWERS_FAILURE, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS, LOAD_FOLLOWINGS_FAILURE, FOLLOW_USER_REQUEST, FOLLOW_USER_SUCCESS, FOLLOW_USER_FAILURE, UNFOLLOW_USER_REQUEST, UNFOLLOW_USER_SUCCESS, UNFOLLOW_USER_FAILURE, REMOVE_FOLLOWER_REQUEST, REMOVE_FOLLOWER_SUCCESS, REMOVE_FOLLOWER_FAILURE, EDIT_NICKNAME_REQUEST, EDIT_NICKNAME_SUCCESS, EDIT_NICKNAME_FAILURE, ADD_POST_TO_ME, REMOVE_POST_OF_ME, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -6983,6 +7019,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EDIT_NICKNAME_SUCCESS", function() { return EDIT_NICKNAME_SUCCESS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EDIT_NICKNAME_FAILURE", function() { return EDIT_NICKNAME_FAILURE; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ADD_POST_TO_ME", function() { return ADD_POST_TO_ME; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "REMOVE_POST_OF_ME", function() { return REMOVE_POST_OF_ME; });
 /* harmony import */ var _babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/toConsumableArray */ "./node_modules/@babel/runtime-corejs2/helpers/esm/toConsumableArray.js");
 /* harmony import */ var _babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/objectSpread */ "./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js");
 
@@ -7048,7 +7085,8 @@ var REMOVE_FOLLOWER_FAILURE = 'REMOVE_FOLLOWER_FAILURE';
 var EDIT_NICKNAME_REQUEST = 'EDIT_NICKNAME_REQUEST';
 var EDIT_NICKNAME_SUCCESS = 'EDIT_NICKNAME_SUCCESS';
 var EDIT_NICKNAME_FAILURE = 'EDIT_NICKNAME_FAILURE';
-var ADD_POST_TO_ME = 'ADD_POST_TO_ME'; //= =실제 액션======================
+var ADD_POST_TO_ME = 'ADD_POST_TO_ME';
+var REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME'; //= =실제 액션======================
 
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
@@ -7202,6 +7240,17 @@ var ADD_POST_TO_ME = 'ADD_POST_TO_ME'; //= =실제 액션======================
         });
       }
 
+    case REMOVE_POST_OF_ME:
+      {
+        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+          me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
+            Posts: state.me.Posts.filter(function (v) {
+              return v.id !== action.data;
+            })
+          })
+        });
+      }
+
     case LOAD_FOLLOWERS_REQUEST:
       {
         return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
@@ -7210,7 +7259,7 @@ var ADD_POST_TO_ME = 'ADD_POST_TO_ME'; //= =실제 액션======================
     case LOAD_FOLLOWERS_SUCCESS:
       {
         return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          followerList: action.data
+          followerList: state.followerList.concat(action.data)
         });
       }
 
@@ -7227,7 +7276,7 @@ var ADD_POST_TO_ME = 'ADD_POST_TO_ME'; //= =실제 액션======================
     case LOAD_FOLLOWINGS_SUCCESS:
       {
         return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          followingList: action.data
+          followingList: state.followingList.concat(action.data)
         });
       }
 
@@ -7424,6 +7473,12 @@ _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(r
 _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(watchRetweet),
     _marked21 =
 /*#__PURE__*/
+_babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(removePost),
+    _marked22 =
+/*#__PURE__*/
+_babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(watchRemovePost),
+    _marked23 =
+/*#__PURE__*/
 _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(postSaga);
 
 
@@ -7564,7 +7619,7 @@ function watchLoadMainPosts() {
 
 
 function loadHashtagPostsAPI(tag) {
-  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.get("/hashtag/".concat(tag)); // 서버에 요청
+  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.get("/hashtag/".concat(encodeURIComponent(tag))); // 서버에 요청
   // withCredentials : true는 붙이지 않아도 됨. 로그인하지 않는 사람도 게시글은 볼 수 있음.
 }
 
@@ -7625,7 +7680,7 @@ function watchLoadHashtagPosts() {
 
 
 function loadUserPostsAPI(id) {
-  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.get("/user/".concat(id, "/posts")); // 서버에 요청
+  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.get("/user/".concat(id || 0, "/posts")); // 서버에 요청
   // withCredentials : true는 붙이지 않아도 됨. 로그인하지 않는 사람도 게시글은 볼 수 있음.
 }
 
@@ -7820,7 +7875,7 @@ function watchLoadComments() {
 function uploadImagesAPI(formData) {
   // 서버에 요청을 보내는 부분
   return axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('/post/images', formData, {
-    withCredentials: true //로그인한 사용자만 이미지 올릴 수 있음.
+    withCredentials: true // 로그인한 사용자만 이미지 올릴 수 있음.
 
   });
 }
@@ -7888,7 +7943,7 @@ function watchUploadImages() {
 function likePostAPI(postId) {
   // 서버에 요청을 보내는 부분
   return axios__WEBPACK_IMPORTED_MODULE_2___default.a.post("/post/".concat(postId, "/like"), {}, {
-    withCredentials: true //로그인한 사용자만 이미지 올릴 수 있음.
+    withCredentials: true // 로그인한 사용자만 이미지 올릴 수 있음.
 
   });
 }
@@ -7958,7 +8013,7 @@ function watchLikePost() {
 function unlikePostAPI(postId) {
   // 서버에 요청을 보내는 부분
   return axios__WEBPACK_IMPORTED_MODULE_2___default.a.delete("/post/".concat(postId, "/like"), {
-    withCredentials: true //로그인한 사용자만 이미지 올릴 수 있음.
+    withCredentials: true // 로그인한 사용자만 이미지 올릴 수 있음.
 
   });
 }
@@ -8028,8 +8083,8 @@ function watchUnlikePost() {
 function retweetAPI(postId) {
   // 서버에 요청을 보내는 부분
   return axios__WEBPACK_IMPORTED_MODULE_2___default.a.post("/post/".concat(postId, "/retweet"), {}, {
-    //post로 요청할 때는 data가 없더라도 빈 객체라도 넣어주어야 함.
-    withCredentials: true //로그인한 사용자만 이미지 올릴 수 있음.
+    // post로 요청할 때는 data가 없더라도 빈 객체라도 넣어주어야 함.
+    withCredentials: true // 로그인한 사용자만 이미지 올릴 수 있음.
 
   });
 }
@@ -8093,22 +8148,97 @@ function watchRetweet() {
       }
     }
   }, _marked20);
+} // =======================================================================
+
+
+function removePostAPI(postId) {
+  // 서버에 요청을 보내는 부분
+  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.delete("/post/".concat(postId), {
+    // post로 요청할 때는 data가 없더라도 빈 객체라도 넣어주어야 함.
+    withCredentials: true // 로그인한 사용자만 이미지 올릴 수 있음.
+
+  });
 }
 
-function postSaga() {
-  return _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function postSaga$(_context21) {
+function removePost(action) {
+  var result;
+  return _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function removePost$(_context21) {
     while (1) {
       switch (_context21.prev = _context21.next) {
         case 0:
-          _context21.next = 2;
-          return Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["all"])([Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchLoadMainPosts), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchAddPost), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchAddComment), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchLoadComments), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchLoadHashtagPosts), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchLoadUserPosts), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchUploadImages), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchLikePost), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchUnlikePost), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchRetweet)]);
+          _context21.prev = 0;
+          _context21.next = 3;
+          return Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["call"])(removePostAPI, action.data);
 
-        case 2:
+        case 3:
+          result = _context21.sent;
+          _context21.next = 6;
+          return Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["put"])({
+            // put은 dispatch 동일
+            type: _reducers_post__WEBPACK_IMPORTED_MODULE_3__["REMOVE_POST_SUCCESS"],
+            data: result.data
+          });
+
+        case 6:
+          _context21.next = 8;
+          return Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["put"])({
+            type: _reducers_user__WEBPACK_IMPORTED_MODULE_4__["REMOVE_POST_OF_ME"],
+            data: result.data
+          });
+
+        case 8:
+          _context21.next = 15;
+          break;
+
+        case 10:
+          _context21.prev = 10;
+          _context21.t0 = _context21["catch"](0);
+          // loginAPI 실패
+          console.error(_context21.t0);
+          _context21.next = 15;
+          return Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["put"])({
+            type: _reducers_post__WEBPACK_IMPORTED_MODULE_3__["REMOVE_POST_FAILURE"],
+            error: _context21.t0
+          });
+
+        case 15:
         case "end":
           return _context21.stop();
       }
     }
-  }, _marked21);
+  }, _marked21, null, [[0, 10]]);
+}
+
+function watchRemovePost() {
+  return _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function watchRemovePost$(_context22) {
+    while (1) {
+      switch (_context22.prev = _context22.next) {
+        case 0:
+          _context22.next = 2;
+          return Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["takeLatest"])(_reducers_post__WEBPACK_IMPORTED_MODULE_3__["REMOVE_POST_REQUEST"], removePost);
+
+        case 2:
+        case "end":
+          return _context22.stop();
+      }
+    }
+  }, _marked22);
+}
+
+function postSaga() {
+  return _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function postSaga$(_context23) {
+    while (1) {
+      switch (_context23.prev = _context23.next) {
+        case 0:
+          _context23.next = 2;
+          return Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["all"])([Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchLoadMainPosts), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchAddPost), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchAddComment), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchLoadComments), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchLoadHashtagPosts), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchLoadUserPosts), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchUploadImages), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchLikePost), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchUnlikePost), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchRetweet), Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["fork"])(watchRemovePost)]);
+
+        case 2:
+        case "end":
+          return _context23.stop();
+      }
+    }
+  }, _marked23);
 }
 
 /***/ }),
@@ -8196,7 +8326,6 @@ _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(w
     _marked21 =
 /*#__PURE__*/
 _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(userSaga);
-
 
 
 
@@ -8395,7 +8524,8 @@ function watchLogOut() {
   }, _marked6);
 }
 
-function loadUserAPI(userId) {
+function loadUserAPI() {
+  var userId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
   // 서버에 요청을 보내는 부분
   return axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(userId ? "/user/".concat(userId) : '/user/', {
     // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
@@ -8465,7 +8595,8 @@ function watchLoadUser() {
 } // =====================================================
 
 
-function followAPI(userId) {
+function followAPI() {
+  var userId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
   // 서버에 요청을 보내는 부분
   return axios__WEBPACK_IMPORTED_MODULE_2___default.a.post("/user/".concat(userId, "/follow"), {}, {
     // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
@@ -8533,7 +8664,8 @@ function watchFollow() {
 } // =====================================================
 
 
-function unfollowAPI(userId) {
+function unfollowAPI() {
+  var userId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
   // 서버에 요청을 보내는 부분
   return axios__WEBPACK_IMPORTED_MODULE_2___default.a.delete("/user/".concat(userId, "/follow"), {
     // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
@@ -8602,8 +8734,10 @@ function watchUnfollow() {
 
 
 function loadFollowersAPI(userId) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var limit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 3;
   // 서버에 요청을 보내는 부분
-  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.get("/user/".concat(userId, "/followers"), {
+  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.get("/user/".concat(userId || 0, "/followers?offset=").concat(offset, "&limit=").concat(limit), {
     // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
     withCredentials: true // 서버의 app.use(cors)에서 쿠키를 받는다.
 
@@ -8618,7 +8752,7 @@ function loadFollowers(action) {
         case 0:
           _context13.prev = 0;
           _context13.next = 3;
-          return Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["call"])(loadFollowersAPI, action.data);
+          return Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["call"])(loadFollowersAPI, action.data, action.offset);
 
         case 3:
           result = _context13.sent;
@@ -8670,8 +8804,10 @@ function watchLoadFollowers() {
 
 
 function loadFollowingsAPI(userId) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var limit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 3;
   // 서버에 요청을 보내는 부분
-  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.get("/user/".concat(userId, "/followings"), {
+  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.get("/user/".concat(userId || 0, "/followings?offset=").concat(offset, "&limit=").concat(limit), {
     // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
     withCredentials: true // 서버의 app.use(cors)에서 쿠키를 받는다.
 
@@ -8686,7 +8822,7 @@ function loadFollowings(action) {
         case 0:
           _context15.prev = 0;
           _context15.next = 3;
-          return Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["call"])(loadFollowingsAPI, action.data);
+          return Object(redux_saga_effects__WEBPACK_IMPORTED_MODULE_1__["call"])(loadFollowingsAPI, action.data, action.offset);
 
         case 3:
           result = _context15.sent;
@@ -8737,7 +8873,8 @@ function watchLoadFollowings() {
 } // =====================================================
 
 
-function removeFollowerAPI(userId) {
+function removeFollowerAPI() {
+  var userId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
   // 서버에 요청을 보내는 부분
   return axios__WEBPACK_IMPORTED_MODULE_2___default.a.delete("/user/".concat(userId, "/follower"), {
     // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
@@ -8807,7 +8944,7 @@ function watchRemoveFollower() {
 
 function editNicknameAPI(nickname) {
   // 서버에 요청을 보내는 부분
-  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.patch("/user/nickname", {
+  return axios__WEBPACK_IMPORTED_MODULE_2___default.a.patch('/user/nickname', {
     nickname: nickname
   }, {
     // 부분수정은 patch를 사용한다. 전체 수정은 put

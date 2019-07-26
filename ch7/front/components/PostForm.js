@@ -1,7 +1,9 @@
-import React, {useCallback, useState, useEffect, useRef } from 'react';
+import React, {
+  useCallback, useState, useEffect, useRef,
+} from 'react';
 import { Form, Input, Button } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import {ADD_POST_REQUEST, REMOVE_IMAGE, UPLOAD_IMAGES_REQUEST} from '../reducers/post';
+import { ADD_POST_REQUEST, REMOVE_IMAGE, UPLOAD_IMAGES_REQUEST } from '../reducers/post';
 
 const PostForm = () => {
   const dispatch = useDispatch();
@@ -20,9 +22,9 @@ const PostForm = () => {
     }
     const formData = new FormData();
     imagePaths.forEach((i) => {
-      formData.append(`image`, i); // 이미지 넣는 곳
+      formData.append('image', i); // 이미지 넣는 곳
     });
-    formData.append(`content`, text); // 컨텐트 넣는 곳
+    formData.append('content', text); // 컨텐트 넣는 곳
     dispatch({
       type: ADD_POST_REQUEST,
       data: formData,

@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Avatar, Button, Card, Comment, Form, Icon, Input, List, Popover } from 'antd';
+import {
+  Avatar, Button, Card, Comment, Form, Icon, Input, List, Popover,
+} from 'antd';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   ADD_COMMENT_REQUEST,
   LIKE_POST_REQUEST,
-  LOAD_COMMENTS_REQUEST,
+  LOAD_COMMENTS_REQUEST, REMOVE_POST_REQUEST,
   RETWEET_REQUEST,
   UNLIKE_POST_REQUEST,
 } from '../reducers/post';
@@ -78,11 +80,11 @@ const PostCard = ({ post }) => {
     if (!me) {
       return alert('로그인이 필요합니다.');
     }
-    return dispatch ({
+    return dispatch({
       type: RETWEET_REQUEST,
       data: post.id,
     });
-  },[me && me.id, post && post.id]);
+  }, [me && me.id, post && post.id]);
   // =========================================
   // 팔로우, 언팔로우 이벤트 처리 ============================
   const onFollow = useCallback(userId => () => {
@@ -98,6 +100,13 @@ const PostCard = ({ post }) => {
       data: userId,
     });
   }, []);
+
+  const onRemovePost = useCallback(userId => () => {
+    dispatch ({
+      type: REMOVE_POST_REQUEST,
+      data: userId,
+    });
+  },[]);
 
   return (
     <div>
@@ -122,7 +131,7 @@ const PostCard = ({ post }) => {
                   ? (
                     <>
                       <Button>수정</Button>
-                      <Button type="danger">삭제</Button>
+                      <Button type="danger" onClick={onRemovePost(post.id)}>삭제</Button>
                     </>
                   )
                   : <Button>신고</Button>}
@@ -142,22 +151,22 @@ const PostCard = ({ post }) => {
       >
         {post.RetweetId && post.Retweet
           ? (
-          <Card
-            cover={post.Retweet.Images[0] && <PostImages images={post.Retweet.Images} />}
-          >
-            <Card.Meta
-              avatar={(
-                <Link
-                  href={{ pathname: '/user', query: { id: post.Retweet.User.id } }}
-                  as={`/user/${post.Retweet.User.id}`}
-                >
-                  <a><Avatar>{post.Retweet.User.nickname[0]}</Avatar></a>
-                </Link>
+            <Card
+              cover={post.Retweet.Images[0] && <PostImages images={post.Retweet.Images} />}
+            >
+              <Card.Meta
+                avatar={(
+                  <Link
+                    href={{ pathname: '/user', query: { id: post.Retweet.User.id } }}
+                    as={`/user/${post.Retweet.User.id}`}
+                  >
+                    <a><Avatar>{post.Retweet.User.nickname[0]}</Avatar></a>
+                  </Link>
                 )}
-              title={post.Retweet.User.nickname}
-                description={<PostCardContent postData={post.Retweet.content} />} // a tag x -> Link
-            />
-          </Card>
+                title={post.Retweet.User.nickname}
+                description={<PostCardContent postData={post.Retweet.content} />}
+              />
+            </Card>
           )
           : (
             <Card.Meta
@@ -169,8 +178,8 @@ const PostCard = ({ post }) => {
               title={post.User.nickname}
               description={<PostCardContent postData={post.content} />} // a tag x -> Link
             />
-              )}
-            </Card>
+          )}
+      </Card>
       {commentFormOpened && (
         <>
           <Form onSubmit={onSubmitComment}>

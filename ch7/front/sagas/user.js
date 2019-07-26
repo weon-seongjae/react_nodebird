@@ -1,4 +1,6 @@
-import { all, call, fork, put, takeEvery } from 'redux-saga/effects';
+import {
+  all, call, fork, put, takeEvery,
+} from 'redux-saga/effects';
 import axios from 'axios';
 import {
   EDIT_NICKNAME_FAILURE, EDIT_NICKNAME_REQUEST,
@@ -26,9 +28,10 @@ import {
   UNFOLLOW_USER_FAILURE,
   UNFOLLOW_USER_REQUEST,
   UNFOLLOW_USER_SUCCESS,
+  LOAD_FOLLOWERS_FAILURE,
 } from '../reducers/user';
-import {UPLOAD_IMAGES_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS} from "../reducers/post";
-import {LOAD_FOLLOWERS_FAILURE} from "../reducers/user";
+import { UPLOAD_IMAGES_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from '../reducers/post';
+
 
 // call은 동기 호출(순서를 지켜서 실행하는 경우), fork는 비동기 호출
 // call은 서버에 요청한 후 응답이 다 받아질 때까지 기다림
@@ -114,7 +117,7 @@ function* watchLogOut() {
   yield takeEvery(LOG_OUT_REQUEST, logOut);
 }
 
-function loadUserAPI(userId) {
+function loadUserAPI(userId = 0) {
   // 서버에 요청을 보내는 부분
   return axios.get(userId ? `/user/${userId}` : '/user/', { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
     withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
@@ -144,7 +147,7 @@ function* watchLoadUser() {
 }
 
 // =====================================================
-function followAPI(userId) {
+function followAPI(userId = 0) {
   // 서버에 요청을 보내는 부분
   return axios.post(`/user/${userId}/follow`, {}, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
     withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
@@ -173,7 +176,7 @@ function* watchFollow() {
 }
 
 // =====================================================
-function unfollowAPI(userId) {
+function unfollowAPI(userId = 0) {
   // 서버에 요청을 보내는 부분
   return axios.delete(`/user/${userId}/follow`, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
     withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
@@ -202,9 +205,9 @@ function* watchUnfollow() {
 }
 
 // =====================================================
-function loadFollowersAPI(userId) {
+function loadFollowersAPI(userId, offset = 0, limit = 3) {
   // 서버에 요청을 보내는 부분
-  return axios.get(`/user/${userId}/followers`, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
+  return axios.get(`/user/${userId || 0}/followers?offset=${offset}&limit=${limit}`, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
     withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
   });
 }
@@ -212,7 +215,7 @@ function loadFollowersAPI(userId) {
 function* loadFollowers(action) { // 남의 정보도 불러올 수 있게 수정을 해줘야 함.
   try {
     // yield call(loadFollowersAPI);
-    const result = yield call(loadFollowersAPI, action.data);
+    const result = yield call(loadFollowersAPI, action.data, action.offset);
     yield put({ // put은 dispatch 동일
       type: LOAD_FOLLOWERS_SUCCESS,
       data: result.data,
@@ -231,9 +234,9 @@ function* watchLoadFollowers() {
 }
 
 // =====================================================
-function loadFollowingsAPI(userId) {
+function loadFollowingsAPI(userId, offset = 0, limit = 3) {
   // 서버에 요청을 보내는 부분
-  return axios.get(`/user/${userId}/followings`, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
+  return axios.get(`/user/${userId || 0}/followings?offset=${offset}&limit=${limit}`, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
     withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
   });
 }
@@ -241,7 +244,7 @@ function loadFollowingsAPI(userId) {
 function* loadFollowings(action) { // 남의 정보도 불러올 수 있게 수정을 해줘야 함.
   try {
     // yield call(loadFollowersAPI);
-    const result = yield call(loadFollowingsAPI, action.data);
+    const result = yield call(loadFollowingsAPI, action.data, action.offset);
     yield put({ // put은 dispatch 동일
       type: LOAD_FOLLOWINGS_SUCCESS,
       data: result.data,
@@ -260,7 +263,7 @@ function* watchLoadFollowings() {
 }
 
 // =====================================================
-function removeFollowerAPI(userId) {
+function removeFollowerAPI(userId = 0) {
   // 서버에 요청을 보내는 부분
   return axios.delete(`/user/${userId}/follower`, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
     withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
@@ -291,7 +294,7 @@ function* watchRemoveFollower() {
 // =====================================================
 function editNicknameAPI(nickname) {
   // 서버에 요청을 보내는 부분
-  return axios.patch(`/user/nickname`, { nickname }, { // 부분수정은 patch를 사용한다. 전체 수정은 put
+  return axios.patch('/user/nickname', { nickname }, { // 부분수정은 patch를 사용한다. 전체 수정은 put
     withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
   });
 }

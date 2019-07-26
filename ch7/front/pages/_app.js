@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import PropTypes from 'prop-types';
 import withRedux from 'next-redux-wrapper';
-import withReduxSaga from 'next-redux-saga'; //서버사이드 렌더링에 필수요소
+import withReduxSaga from 'next-redux-saga'; // 서버사이드 렌더링에 필수요소
 import { applyMiddleware, compose, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
@@ -11,8 +11,8 @@ import axios from 'axios';
 import AppLayout from '../components/AppLayout';
 import reducer from '../reducers';
 import rootSaga from '../sagas';
-import Home from "./index";
-import {LOAD_USER_REQUEST} from "../reducers/user";
+import Home from './index';
+import { LOAD_USER_REQUEST } from '../reducers/user';
 
 const NodeBird = ({ Component, store, pageProps }) => ( // hashtag의 component의 props로 넣어줌.
   <Provider store={store}>
@@ -50,15 +50,15 @@ NodeBird.getInitialProps = async (context) => {
   console.log(cookie); // 클라이언트 환경에서는 브라우저가 쿠키를 넣어주는데, 서버일 경우에는 직접 넣어야 한다.
   axios.defaults.headers.Cookie = '';
   if (ctx.isServer) {
-  axios.defaults.headers.Cookie = cookie; // 직접 쿠키를 넣어줌.
+    axios.defaults.headers.Cookie = cookie; // 직접 쿠키를 넣어줌.
   }
-  if (state.user.me) {
+  if (!state.user.me) {
     ctx.store.dispatch({
       type: LOAD_USER_REQUEST,
     });
+  }
   if (Component.getInitialProps) {
     pageProps = await Component.getInitialProps(ctx); // hashtag.js에서 리턴한 값이 pageProps에 담김. pageProps는 위의 NodeBird의 pageProps로 넘김, index.js의 Home.getInitialProps = async (context)가 됨. 게시글 먼저 가져오는 경우
-  }
   }
   return { pageProps }; // component의 props
 };
@@ -66,7 +66,10 @@ NodeBird.getInitialProps = async (context) => {
 
 const configureStore = (initialState, options) => {
   const sagaMiddleware = createSagaMiddleware();
-  const middlewares = [sagaMiddleware];
+  const middlewares = [sagaMiddleware, store => next => (action) => {
+    console.log(action);
+    next(action);
+  }];
   const enhancer = process.env.NODE_ENV === 'production' // 실제 서비스
     ? compose(applyMiddleware(...middlewares))
     : compose(

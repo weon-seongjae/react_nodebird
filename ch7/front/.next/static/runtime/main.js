@@ -6344,7 +6344,7 @@ function connect(options) {
       error.name = err.name;
       error.stack = err.stack; // __NEXT_DIST_DIR is provided by webpack
 
-      (0, _sourceMapSupport.rewriteStacktrace)(error, "C:\\react-nodebird\\ch7\\front\\.next");
+      (0, _sourceMapSupport.rewriteStacktrace)(error, "C:\\react_nodebird\\ch7\\front\\.next");
       return error;
     }
   };
