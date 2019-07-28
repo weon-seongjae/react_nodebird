@@ -56,7 +56,7 @@ const PostForm = () => {
       type: REMOVE_IMAGE,
       index,
     });
-  });
+  }, []);
 
   return (
     <Form style={{ margin: '10px 0 20px' }} encType="multipart/form-data" onSubmit={onSubmitForm}>

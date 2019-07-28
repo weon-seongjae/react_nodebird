@@ -1,6 +1,16 @@
 import { all, call, fork, put, takeEvery } from 'redux-saga/effects';
 import axios from 'axios';
 import {
+  EDIT_NICKNAME_FAILURE, EDIT_NICKNAME_REQUEST,
+  EDIT_NICKNAME_SUCCESS,
+  FOLLOW_USER_FAILURE,
+  FOLLOW_USER_REQUEST,
+  FOLLOW_USER_SUCCESS,
+  LOAD_FOLLOWERS_REQUEST,
+  LOAD_FOLLOWERS_SUCCESS,
+  LOAD_FOLLOWINGS_FAILURE,
+  LOAD_FOLLOWINGS_REQUEST,
+  LOAD_FOLLOWINGS_SUCCESS,
   LOAD_USER_FAILURE,
   LOAD_USER_REQUEST,
   LOAD_USER_SUCCESS,
@@ -9,12 +19,16 @@ import {
   LOG_IN_SUCCESS,
   LOG_OUT_FAILURE,
   LOG_OUT_REQUEST,
-  LOG_OUT_SUCCESS,
+  LOG_OUT_SUCCESS, REMOVE_FOLLOWER_FAILURE, REMOVE_FOLLOWER_REQUEST, REMOVE_FOLLOWER_SUCCESS,
   SIGN_UP_FAILURE,
   SIGN_UP_REQUEST,
   SIGN_UP_SUCCESS,
+  UNFOLLOW_USER_FAILURE,
+  UNFOLLOW_USER_REQUEST,
+  UNFOLLOW_USER_SUCCESS,
 } from '../reducers/user';
 import {UPLOAD_IMAGES_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS} from "../reducers/post";
+import {LOAD_FOLLOWERS_FAILURE} from "../reducers/user";
 
 // call은 동기 호출(순서를 지켜서 실행하는 경우), fork는 비동기 호출
 // call은 서버에 요청한 후 응답이 다 받아질 때까지 기다림
@@ -129,13 +143,192 @@ function* watchLoadUser() {
   yield takeEvery(LOAD_USER_REQUEST, loadUser);
 }
 
+// =====================================================
+function followAPI(userId) {
+  // 서버에 요청을 보내는 부분
+  return axios.post(`/user/${userId}/follow`, {}, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
+    withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
+  });
+}
+
+function* follow(action) { // 남의 정보도 불러올 수 있게 수정을 해줘야 함.
+  try {
+    // yield call(followAPI);
+    const result = yield call(followAPI, action.data);
+    yield put({ // put은 dispatch 동일
+      type: FOLLOW_USER_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: FOLLOW_USER_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchFollow() {
+  yield takeEvery(FOLLOW_USER_REQUEST, follow);
+}
+
+// =====================================================
+function unfollowAPI(userId) {
+  // 서버에 요청을 보내는 부분
+  return axios.delete(`/user/${userId}/follow`, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
+    withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
+  });
+}
+
+function* unfollow(action) { // 남의 정보도 불러올 수 있게 수정을 해줘야 함.
+  try {
+    // yield call(unfollowAPI);
+    const result = yield call(unfollowAPI, action.data);
+    yield put({ // put은 dispatch 동일
+      type: UNFOLLOW_USER_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: UNFOLLOW_USER_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchUnfollow() {
+  yield takeEvery(UNFOLLOW_USER_REQUEST, unfollow);
+}
+
+// =====================================================
+function loadFollowersAPI(userId) {
+  // 서버에 요청을 보내는 부분
+  return axios.get(`/user/${userId}/followers`, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
+    withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
+  });
+}
+
+function* loadFollowers(action) { // 남의 정보도 불러올 수 있게 수정을 해줘야 함.
+  try {
+    // yield call(loadFollowersAPI);
+    const result = yield call(loadFollowersAPI, action.data);
+    yield put({ // put은 dispatch 동일
+      type: LOAD_FOLLOWERS_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: LOAD_FOLLOWERS_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchLoadFollowers() {
+  yield takeEvery(LOAD_FOLLOWERS_REQUEST, loadFollowers);
+}
+
+// =====================================================
+function loadFollowingsAPI(userId) {
+  // 서버에 요청을 보내는 부분
+  return axios.get(`/user/${userId}/followings`, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
+    withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
+  });
+}
+
+function* loadFollowings(action) { // 남의 정보도 불러올 수 있게 수정을 해줘야 함.
+  try {
+    // yield call(loadFollowersAPI);
+    const result = yield call(loadFollowingsAPI, action.data);
+    yield put({ // put은 dispatch 동일
+      type: LOAD_FOLLOWINGS_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: LOAD_FOLLOWINGS_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchLoadFollowings() {
+  yield takeEvery(LOAD_FOLLOWINGS_REQUEST, loadFollowings);
+}
+
+// =====================================================
+function removeFollowerAPI(userId) {
+  // 서버에 요청을 보내는 부분
+  return axios.delete(`/user/${userId}/follower`, { // get은 데이터가 없기 때문에 두번째가 바로 설정이 된다.
+    withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
+  });
+}
+
+function* removeFollower(action) { // 남의 정보도 불러올 수 있게 수정을 해줘야 함.
+  try {
+    // yield call(removeFollowersAPI);
+    const result = yield call(removeFollowerAPI, action.data);
+    yield put({ // put은 dispatch 동일
+      type: REMOVE_FOLLOWER_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: REMOVE_FOLLOWER_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchRemoveFollower() {
+  yield takeEvery(REMOVE_FOLLOWER_REQUEST, removeFollower);
+}
+
+// =====================================================
+function editNicknameAPI(nickname) {
+  // 서버에 요청을 보내는 부분
+  return axios.patch(`/user/nickname`, { nickname }, { // 부분수정은 patch를 사용한다. 전체 수정은 put
+    withCredentials: true, // 서버의 app.use(cors)에서 쿠키를 받는다.
+  });
+}
+
+function* editNickname(action) { // 남의 정보도 불러올 수 있게 수정을 해줘야 함.
+  try {
+    // yield call(editNicknamesAPI);
+    const result = yield call(editNicknameAPI, action.data);
+    yield put({ // put은 dispatch 동일
+      type: EDIT_NICKNAME_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: EDIT_NICKNAME_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchEditNickname() {
+  yield takeEvery(EDIT_NICKNAME_REQUEST, editNickname);
+}
+
+
 export default function* userSaga() {
   yield all([
     fork(watchLogIn),
     fork(watchLogOut),
     fork(watchLoadUser),
     fork(watchSignUp),
-    fork(watchLogOut),
-    fork(watchLoadUser),
+    fork(watchFollow),
+    fork(watchUnfollow),
+    fork(watchLoadFollowers),
+    fork(watchLoadFollowings),
+    fork(watchRemoveFollower),
+    fork(watchEditNickname),
   ]);
 }

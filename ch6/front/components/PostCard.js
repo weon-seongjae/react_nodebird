@@ -3,15 +3,17 @@ import { Avatar, Button, Card, Comment, Form, Icon, Input, List, Popover } from 
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+
 import {
   ADD_COMMENT_REQUEST,
   LIKE_POST_REQUEST,
   LOAD_COMMENTS_REQUEST,
   RETWEET_REQUEST,
-  UNLIKE_POST_REQUEST
+  UNLIKE_POST_REQUEST,
 } from '../reducers/post';
 import PostImages from './PostImages';
-import PostCardContent from "./PostCardContent";
+import PostCardContent from './PostCardContent';
+import { FOLLOW_USER_REQUEST, UNFOLLOW_USER_REQUEST } from '../reducers/user';
 
 const PostCard = ({ post }) => {
   const [commentFormOpened, setCommentFormOpened] = useState(false);
@@ -23,7 +25,7 @@ const PostCard = ({ post }) => {
   const liked = me && post.Likers && post.Likers.find(v => v.id === me.id);
 
   const onToggleComment = useCallback(() => {
-    setCommentFormOpened(prev => !prev); // 펼쳐져 있으면 닫고, 닫혀져 있으면 펼침
+    setCommentFormOpened(prev => !prev);
     if (!commentFormOpened) {
       dispatch({
         type: LOAD_COMMENTS_REQUEST,
@@ -55,21 +57,21 @@ const PostCard = ({ post }) => {
   }, []);
 
   const onToggleLike = useCallback(() => {
-    if(!me) {
-      return alert('로그인이 필요합니다.');
+    if (!me) {
+      return alert('로그인이 필요합니다!');
     }
-    if (liked) { // 좋아요를 누른 상태
+    if (liked) { // 좋아요 누른 상태
       dispatch({
         type: UNLIKE_POST_REQUEST,
         data: post.id,
-      })
-    } else { // 좋아요 누르지 않은 상태
+      });
+    } else { // 좋아요 안 누른 상태
       dispatch({
         type: LIKE_POST_REQUEST,
         data: post.id,
       });
     }
-  },[me && me.id, post && post.id, liked]);
+  }, [me && me.id, post && post.id, liked]);
 
   // 리트윗 만들기 =============================
   const onRetweet = useCallback(() => {
@@ -80,49 +82,66 @@ const PostCard = ({ post }) => {
       type: RETWEET_REQUEST,
       data: post.id,
     });
-  },[me && me.id, post && post.id])
+  },[me && me.id, post && post.id]);
   // =========================================
+  // 팔로우, 언팔로우 이벤트 처리 ============================
+  const onFollow = useCallback(userId => () => {
+    dispatch({
+      type: FOLLOW_USER_REQUEST,
+      data: userId,
+    });
+  }, []);
+
+  const onUnfollow = useCallback(userId => () => {
+    dispatch({
+      type: UNFOLLOW_USER_REQUEST,
+      data: userId,
+    });
+  }, []);
 
   return (
     <div>
       <Card
         key={+post.createdAt}
         cover={post.Images && post.Images[0] && <PostImages images={post.Images} />}
-        // 커버라는 속성으로 이미지를 가져올 수 있음
         actions={[
           <Icon type="retweet" key="retweet" onClick={onRetweet} />,
           <Icon
             type="heart"
             key="heart"
             theme={liked ? 'twoTone' : 'outlined'}
-            twoToneColor='#eb2f96'
+            twoToneColor="#eb2f96"
             onClick={onToggleLike}
           />,
           <Icon type="message" key="message" onClick={onToggleComment} />,
           <Popover
-            key='ellipsis'
+            key="ellipsis"
             content={(
               <Button.Group>
                 {me && post.UserId === me.id
-                ? (
-                  <>
-                    <Button>수정</Button>
-                    <Button type='danger'>삭제</Button>
-                  </>
+                  ? (
+                    <>
+                      <Button>수정</Button>
+                      <Button type="danger">삭제</Button>
+                    </>
                   )
                   : <Button>신고</Button>}
               </Button.Group>
             )}
           >
-            <Icon type='ellipsis' />
+            <Icon type="ellipsis" />
           </Popover>,
         ]}
         title={post.RetweetId ? `${post.User.nickname}님이 리트윗하셨습니다.` : null}
-        extra={<Button>팔로우</Button>}
+        extra={!me || post.User.id === me.id
+          ? null
+          : me.Followings && me.Followings.find(v => v.id === post.User.id)
+            ? <Button onClick={onUnfollow(post.User.id)}>언팔로우</Button>
+            : <Button onClick={onFollow(post.User.id)}>팔로우</Button>
+        }
       >
         {post.RetweetId && post.Retweet
           ? (
-          // 리트윗을 한 경우
           <Card
             cover={post.Retweet.Images[0] && <PostImages images={post.Retweet.Images} />}
           >
@@ -134,21 +153,21 @@ const PostCard = ({ post }) => {
                 >
                   <a><Avatar>{post.Retweet.User.nickname[0]}</Avatar></a>
                 </Link>
-              )} // 게시글의 avatar
+                )}
               title={post.Retweet.User.nickname}
-              description={<PostCardContent postData={post.Retweet.content} />} // 게시글 컨텐트. a 태그로 바꾸는 게 아니라 next의 Link태그로 바꿔야 함.
+                description={<PostCardContent postData={post.Retweet.content} />} // a tag x -> Link
             />
           </Card>
           )
-          : ( // 리트윗을 하지 않은 경우
-            <Card Meta
+          : (
+            <Card.Meta
               avatar={(
                 <Link href={{ pathname: '/user', query: { id: post.User.id } }} as={`/user/${post.User.id}`}>
                   <a><Avatar>{post.User.nickname[0]}</Avatar></a>
                 </Link>
-              )} // 게시글의 avatar
+              )}
               title={post.User.nickname}
-              description={<PostCardContent postData={post.content} />} // 게시글 컨텐트. a 태그로 바꾸는 게 아니라 next의 Link태그로 바꿔야 함.
+              description={<PostCardContent postData={post.content} />} // a tag x -> Link
             />
               )}
             </Card>
@@ -190,7 +209,7 @@ PostCard.propTypes = {
     content: PropTypes.string,
     img: PropTypes.string,
     createdAt: PropTypes.object,
-  }),
+  }).isRequired,
 };
 
 export default PostCard;

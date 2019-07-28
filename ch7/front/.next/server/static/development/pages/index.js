@@ -5949,7 +5949,8 @@ var Home = function Home() {
   var _useSelector = Object(react_redux__WEBPACK_IMPORTED_MODULE_4__["useSelector"])(function (state) {
     return state.post;
   }),
-      mainPosts = _useSelector.mainPosts; // const dispatch = useDispatch(); // react를 연결하려는 경우 useDispatch, setState와 동일한 기능은 useDispatch
+      mainPosts = _useSelector.mainPosts,
+      hasMorePost = _useSelector.hasMorePost; // const dispatch = useDispatch(); // react를 연결하려는 경우 useDispatch, setState와 동일한 기능은 useDispatch
 
 
   var _useSelector2 = Object(react_redux__WEBPACK_IMPORTED_MODULE_4__["useSelector"])(function (state) {
@@ -5960,6 +5961,26 @@ var Home = function Home() {
 
 
   var dispatch = Object(react_redux__WEBPACK_IMPORTED_MODULE_4__["useDispatch"])();
+  var onScroll = Object(react__WEBPACK_IMPORTED_MODULE_3__["useCallback"])(function () {
+    console.log(window.scrollY, document.documentElement.clientHeight, document.documentElement.scrollHeight); // scrollY: 처음부터 제일 밑으로 내일 위치에서 상단까지의 높이(스크롤 내린 거리)
+    // clientHeight: 상단까지의 높이에서 스크롤을 제외한 하단까지의 높이(화면높이)
+    // scrollHeight: scrollY + clientHeight 값(전체 화면 길이)
+
+    if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300) {
+      if (hasMorePost) {
+        dispatch({
+          type: _reducers_post__WEBPACK_IMPORTED_MODULE_7__["LOAD_MAIN_POSTS_REQUEST"],
+          lastId: mainPosts[mainPosts.length - 1].id
+        });
+      }
+    }
+  }, [hasMorePost, mainPosts.length]);
+  Object(react__WEBPACK_IMPORTED_MODULE_3__["useEffect"])(function () {
+    window.addEventListener('scroll', onScroll);
+    return function () {
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [mainPosts.length]);
   return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement("div", null, me && react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_components_PostForm__WEBPACK_IMPORTED_MODULE_5__["default"], null), mainPosts.map(function (c) {
     return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_components_PostCard__WEBPACK_IMPORTED_MODULE_6__["default"], {
       key: c,
@@ -6220,7 +6241,8 @@ var REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
     case LOAD_USER_POSTS_REQUEST:
       {
         return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          mainPosts: []
+          mainPosts: action.lastId === 0 ? [] : state.mainPosts,
+          hasMorePost: action.lastId ? state.hasMorePost : true
         });
       }
 
@@ -6229,8 +6251,9 @@ var REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
     case LOAD_USER_POSTS_SUCCESS:
       {
         return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          mainPosts: action.data // 서버로부터 받은 데이터 넣음
-
+          mainPosts: state.mainPosts.concat(action.data),
+          // 지난 게시글에 추가
+          hasMorePost: action.data.length === 10
         });
       }
 
@@ -6422,8 +6445,10 @@ var initialState = {
   // 남의 정보
   isEditingNickname: false,
   // 이름 변경 중
-  editNicknameErrorReason: '' // 이름 변경 실패 사유
-
+  editNicknameErrorReason: '',
+  // 이름 변경 실패 사유
+  hasMoreFollower: false,
+  hasMoreFollowing: false
 }; //= =액션의 이름(비동기요청)====================
 
 var SIGN_UP_REQUEST = 'SIGN_UP_REQUEST';
@@ -6627,13 +6652,17 @@ var REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME'; //= =실제 액션=================
 
     case LOAD_FOLLOWERS_REQUEST:
       {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+          hasMoreFollower: action.offset ? state.hasMoreFollower : true // 처음 데이터를 가져올 때는 더보기 버튼 보여주기
+
+        });
       }
 
     case LOAD_FOLLOWERS_SUCCESS:
       {
         return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          followerList: state.followerList.concat(action.data)
+          followerList: state.followerList.concat(action.data),
+          hasMoreFollower: action.data.length === 3
         });
       }
 
@@ -6644,13 +6673,16 @@ var REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME'; //= =실제 액션=================
 
     case LOAD_FOLLOWINGS_REQUEST:
       {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+          hasMoreFollowing: action.offset ? state.hasMoreFollowing : true
+        });
       }
 
     case LOAD_FOLLOWINGS_SUCCESS:
       {
         return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          followingList: state.followingList.concat(action.data)
+          followingList: state.followingList.concat(action.data),
+          hasMoreFollowing: action.data.length === 3
         });
       }
 
@@ -6725,7 +6757,7 @@ var REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME'; //= =실제 액션=================
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\react_nodebird\ch7\front\pages\index.js */"./pages/index.js");
+module.exports = __webpack_require__(/*! C:\react-nodebird\ch7\front\pages\index.js */"./pages/index.js");
 
 
 /***/ }),

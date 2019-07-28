@@ -1,15 +1,37 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
 import { LOAD_MAIN_POSTS_REQUEST } from '../reducers/post';
 
 const Home = () => {
-  const { mainPosts } = useSelector(state => state.post);
+  const { mainPosts, hasMorePost } = useSelector(state => state.post);
   // const dispatch = useDispatch(); // react를 연결하려는 경우 useDispatch, setState와 동일한 기능은 useDispatch
   const { me } = useSelector(state => state.user); // redux state 갖다 쓰고 싶을 때 useSelect, react의 useState개념
   // console.log(user);
   const dispatch = useDispatch();
+
+  const onScroll = useCallback(() => {
+    console.log(window.scrollY, document.documentElement.clientHeight, document.documentElement.scrollHeight);
+    // scrollY: 처음부터 제일 밑으로 내일 위치에서 상단까지의 높이(스크롤 내린 거리)
+    // clientHeight: 상단까지의 높이에서 스크롤을 제외한 하단까지의 높이(화면높이)
+    // scrollHeight: scrollY + clientHeight 값(전체 화면 길이)
+    if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300) {
+      if(hasMorePost) {
+        dispatch({
+          type: LOAD_MAIN_POSTS_REQUEST,
+          lastId: mainPosts[mainPosts.length - 1].id,
+        })
+      }
+    }
+  },[hasMorePost, mainPosts.length]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
+  },[mainPosts.length]);
 
   return (
     <div>
@@ -29,3 +51,5 @@ Home.getInitialProps = async (context) => { // pageProps = await Component.getIn
 };
 
 export default Home;
+
+
