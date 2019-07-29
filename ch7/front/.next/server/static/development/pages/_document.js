@@ -5121,6 +5121,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_10__);
 /* harmony import */ var next_document__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! next/document */ "./node_modules/next/document.js");
 /* harmony import */ var next_document__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(next_document__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! styled-components */ "styled-components");
+/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(styled_components__WEBPACK_IMPORTED_MODULE_12__);
+
 
 
 
@@ -5155,20 +5158,23 @@ function (_Document) {
 
       var htmlAttrs = htmlAttributes.toComponent();
       var bodyAttrs = bodyAttributes.toComponent();
-      return react__WEBPACK_IMPORTED_MODULE_8___default.a.createElement("html", htmlAttrs, react__WEBPACK_IMPORTED_MODULE_8___default.a.createElement("head", null, _babel_runtime_corejs2_core_js_object_values__WEBPACK_IMPORTED_MODULE_1___default()(helmet).map(function (el) {
+      return react__WEBPACK_IMPORTED_MODULE_8___default.a.createElement("html", htmlAttrs, react__WEBPACK_IMPORTED_MODULE_8___default.a.createElement("head", null, this.props.styleTags, _babel_runtime_corejs2_core_js_object_values__WEBPACK_IMPORTED_MODULE_1___default()(helmet).map(function (el) {
         return el.toComponent();
       })), react__WEBPACK_IMPORTED_MODULE_8___default.a.createElement("body", bodyAttrs, react__WEBPACK_IMPORTED_MODULE_8___default.a.createElement(next_document__WEBPACK_IMPORTED_MODULE_11__["Main"], null), react__WEBPACK_IMPORTED_MODULE_8___default.a.createElement(next_document__WEBPACK_IMPORTED_MODULE_11__["NextScript"], null)));
     }
   }], [{
     key: "getInitialProps",
     value: function getInitialProps(context) {
+      var sheet = new styled_components__WEBPACK_IMPORTED_MODULE_12__["ServerStyleSheet"]();
       var page = context.renderPage(function (App) {
         return function (props) {
-          return react__WEBPACK_IMPORTED_MODULE_8___default.a.createElement(App, props);
+          return sheet.collectStyles(react__WEBPACK_IMPORTED_MODULE_8___default.a.createElement(App, props));
         };
       });
+      var styleTags = sheet.getStyleElement();
       return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, page, {
-        helmet: react_helmet__WEBPACK_IMPORTED_MODULE_9___default.a.renderStatic()
+        helmet: react_helmet__WEBPACK_IMPORTED_MODULE_9___default.a.renderStatic(),
+        styleTags: styleTags
       });
     }
   }]);
@@ -5177,7 +5183,8 @@ function (_Document) {
 }(next_document__WEBPACK_IMPORTED_MODULE_11___default.a);
 
 MyDocument.propTypes = {
-  helmet: prop_types__WEBPACK_IMPORTED_MODULE_10___default.a.object.isRequired
+  helmet: prop_types__WEBPACK_IMPORTED_MODULE_10___default.a.object.isRequired,
+  styleTags: prop_types__WEBPACK_IMPORTED_MODULE_10___default.a.object.isRequired
 };
 /* harmony default export */ __webpack_exports__["default"] = (MyDocument);
 
@@ -5269,6 +5276,17 @@ module.exports = require("react-helmet");
 /***/ (function(module, exports) {
 
 module.exports = require("regenerator-runtime");
+
+/***/ }),
+
+/***/ "styled-components":
+/*!************************************!*\
+  !*** external "styled-components" ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("styled-components");
 
 /***/ }),
 

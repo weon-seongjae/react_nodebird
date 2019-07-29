@@ -195,19 +195,14 @@ export default (state = initialState, action) => {
         };
       }
       case REMOVE_POST_OF_ME: {
-        return {
-          ...state,
-          me: {
-            ...state.me,
-            Posts: state.me.Posts.filter(v => v.id !== action.data),
-          },
-        };
+        const index = draft.me.Posts.findIndex(v => v.id === action.data);
+        draft.me.Posts.splice(index, 1);
+        break;
       }
       case LOAD_FOLLOWERS_REQUEST: {
-        return {
-          ...state,
-          hasMoreFollower: action.offset ? state.hasMoreFollower : true, // 처음 데이터를 가져올 때는 더보기 버튼 보여주기
-        };
+        draft.followerList = !action.offset ? [] : draft.followerList;
+        draft.hasMoreFollower = action.offset ? draft.hasMoreFollower : true; // 처음 데이터를 가져올 때는 더보기 버튼 보여주기
+        break;
       }
       case LOAD_FOLLOWERS_SUCCESS: {
         return {
@@ -228,11 +223,9 @@ export default (state = initialState, action) => {
         };
       }
       case LOAD_FOLLOWINGS_SUCCESS: {
-        return {
-          ...state,
-          followingList: state.followingList.concat(action.data),
-          hasMoreFollowing: action.data.length === 3,
-        };
+        draft.followingList = !action.offset ? [] : draft.followingList;
+        draft.hasMoreFollowing = action.offset ? draft.hasMoreFollowing : true;
+        break;
       }
       case LOAD_FOLLOWINGS_FAILURE: {
         return {

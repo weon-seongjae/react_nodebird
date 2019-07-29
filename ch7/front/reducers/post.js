@@ -133,10 +133,8 @@ export default (state = initialState, action) => {
       case LOAD_MAIN_POSTS_SUCCESS:
       case LOAD_HASHTAG_POSTS_SUCCESS:
       case LOAD_USER_POSTS_SUCCESS: {
-        action.data.forEach((d) => {
-          draft.mainPosts.push(d);
-        });
-        draft.hasMorePost = action.data.length === 10;
+        draft.mainPosts = !action.lastId ? [] : draft.mainPosts;
+        draft.hasMorePost = action.lastId ? draft.hasMorePost : true;
         break;
       }
       case LOAD_MAIN_POSTS_FAILURE:

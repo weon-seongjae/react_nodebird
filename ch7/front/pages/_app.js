@@ -81,7 +81,7 @@ NodeBird.getInitialProps = async (context) => {
     });
   }
   if (Component.getInitialProps) {
-    pageProps = await Component.getInitialProps(ctx); // hashtag.js에서 리턴한 값이 pageProps에 담김. pageProps는 위의 NodeBird의 pageProps로 넘김, index.js의 Home.getInitialProps = async (context)가 됨. 게시글 먼저 가져오는 경우
+    pageProps = await Component.getInitialProps(ctx) || {}; // hashtag.js에서 리턴한 값이 pageProps에 담김. pageProps는 위의 NodeBird의 pageProps로 넘김, index.js의 Home.getInitialProps = async (context)가 됨. 게시글 먼저 가져오는 경우
   }
   return { pageProps }; // component의 props
 };
