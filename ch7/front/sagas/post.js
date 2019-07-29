@@ -1,5 +1,5 @@
 import {
-  all, fork, takeLatest, takeEvery, put, delay, call, throttle
+  all, fork, takeLatest, takeEvery, put, delay, call, throttle,
 } from 'redux-saga/effects';
 import axios from 'axios';
 import {
@@ -35,9 +35,9 @@ import {
   RETWEET_SUCCESS,
   REMOVE_POST_SUCCESS,
   REMOVE_POST_FAILURE,
-  REMOVE_POST_REQUEST,
+  REMOVE_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST,
 } from '../reducers/post';
-import {ADD_POST_TO_ME, REMOVE_POST_OF_ME} from '../reducers/user';
+import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
 
 function addPostAPI(postData) {
   return axios.post('/post', postData, { // postData에 게시글 들어있음
@@ -360,6 +360,34 @@ function* watchRemovePost() {
   yield takeLatest(REMOVE_POST_REQUEST, removePost);
 }
 
+// =======================================================================
+
+function loadPostAPI(postId) {
+  // 서버에 요청을 보내는 부분
+  return axios.get(`/post/${postId}`);
+}
+
+function* loadPost(action) { // 남의 정보도 불러올 수 있게 수정을 해줘야 함.
+  try {
+    // yield call(loadPostAPI);
+    const result = yield call(loadPostAPI, action.data);
+    yield put({ // put은 dispatch 동일
+      type: LOAD_POST_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) { // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: LOAD_POST_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchLoadPost() {
+  yield takeLatest(LOAD_POST_REQUEST, loadPost);
+}
+
 export default function* postSaga() {
   yield all([
     fork(watchLoadMainPosts),
@@ -373,5 +401,6 @@ export default function* postSaga() {
     fork(watchUnlikePost),
     fork(watchRetweet),
     fork(watchRemovePost),
+    fork(watchLoadPost),
   ]);
 }

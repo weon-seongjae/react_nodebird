@@ -6026,7 +6026,7 @@ function () {
 /*!**************************!*\
   !*** ./reducers/post.js ***!
   \**************************/
-/*! exports provided: initialState, LOAD_MAIN_POSTS_REQUEST, LOAD_MAIN_POSTS_SUCCESS, LOAD_MAIN_POSTS_FAILURE, LOAD_HASHTAG_POSTS_REQUEST, LOAD_HASHTAG_POSTS_SUCCESS, LOAD_HASHTAG_POSTS_FAILURE, LOAD_USER_POSTS_REQUEST, LOAD_USER_POSTS_SUCCESS, LOAD_USER_POSTS_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE, REMOVE_IMAGE, ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UNLIKE_POST_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, LOAD_COMMENTS_REQUEST, LOAD_COMMENTS_SUCCESS, LOAD_COMMENTS_FAILURE, RETWEET_REQUEST, RETWEET_SUCCESS, RETWEET_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE, default */
+/*! exports provided: initialState, LOAD_MAIN_POSTS_REQUEST, LOAD_MAIN_POSTS_SUCCESS, LOAD_MAIN_POSTS_FAILURE, LOAD_HASHTAG_POSTS_REQUEST, LOAD_HASHTAG_POSTS_SUCCESS, LOAD_HASHTAG_POSTS_FAILURE, LOAD_USER_POSTS_REQUEST, LOAD_USER_POSTS_SUCCESS, LOAD_USER_POSTS_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE, REMOVE_IMAGE, ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UNLIKE_POST_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, LOAD_COMMENTS_REQUEST, LOAD_COMMENTS_SUCCESS, LOAD_COMMENTS_FAILURE, RETWEET_REQUEST, RETWEET_SUCCESS, RETWEET_FAILURE, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_POST_FAILURE, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -6066,9 +6066,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "REMOVE_POST_REQUEST", function() { return REMOVE_POST_REQUEST; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "REMOVE_POST_SUCCESS", function() { return REMOVE_POST_SUCCESS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "REMOVE_POST_FAILURE", function() { return REMOVE_POST_FAILURE; });
-/* harmony import */ var _babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/toConsumableArray */ "./node_modules/@babel/runtime-corejs2/helpers/esm/toConsumableArray.js");
-/* harmony import */ var _babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/objectSpread */ "./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js");
-
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LOAD_POST_REQUEST", function() { return LOAD_POST_REQUEST; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LOAD_POST_SUCCESS", function() { return LOAD_POST_SUCCESS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LOAD_POST_FAILURE", function() { return LOAD_POST_FAILURE; });
+/* harmony import */ var immer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! immer */ "immer");
+/* harmony import */ var immer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(immer__WEBPACK_IMPORTED_MODULE_0__);
 
 var initialState = {
   mainPosts: [],
@@ -6083,7 +6085,8 @@ var initialState = {
   // 포스트 업로드 성공
   isAddingComment: false,
   addCommentErrorReason: '',
-  commentAdded: false
+  commentAdded: false,
+  singlePost: null
 };
 var LOAD_MAIN_POSTS_REQUEST = 'LOAD_MAIN_POSTS_REQUEST';
 var LOAD_MAIN_POSTS_SUCCESS = 'LOAD_MAIN_POSTS_SUCCESS';
@@ -6119,255 +6122,224 @@ var RETWEET_FAILURE = 'RETWEET_FAILURE';
 var REMOVE_POST_REQUEST = 'REMOVE_POST_REQUEST';
 var REMOVE_POST_SUCCESS = 'REMOVE_POST_SUCCESS';
 var REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
+var LOAD_POST_REQUEST = 'LOAD_POST_REQUEST';
+var LOAD_POST_SUCCESS = 'LOAD_POST_SUCCESS';
+var LOAD_POST_FAILURE = 'LOAD_POST_FAILURE';
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
   var action = arguments.length > 1 ? arguments[1] : undefined;
+  return immer__WEBPACK_IMPORTED_MODULE_0___default()(state, function (draft) {
+    switch (action.type) {
+      case UPLOAD_IMAGES_REQUEST:
+        {
+          break;
+        }
 
-  switch (action.type) {
-    case UPLOAD_IMAGES_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
+      case UPLOAD_IMAGES_SUCCESS:
+        {
+          action.data.forEach(function (p) {
+            draft.imagePaths.push(p);
+          });
+          break;
+        }
 
-    case UPLOAD_IMAGES_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          imagePaths: [].concat(Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(state.imagePaths), Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(action.data)) // 이미지 미리보기 할 수 있는 경로들
+      case UPLOAD_IMAGES_FAILURE:
+        {
+          break;
+        }
 
-        });
-      }
+      case REMOVE_IMAGE:
+        {
+          var index = draft.imagePaths.findIndex(function (v, i) {
+            return i === action.index;
+          });
+          draft.imagePaths.splice(index, 1);
+          break;
+        }
 
-    case UPLOAD_IMAGES_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
+      case ADD_POST_REQUEST:
+        {
+          draft.isAddingPost = true;
+          draft.addingPostErrorReason = '';
+          draft.postAdded = false;
+          break;
+        }
 
-    case REMOVE_IMAGE:
-      {
-        // 동기 작업으로 이것 하나만 필요하다.
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          imagePaths: state.imagePaths.filter(function (v, i) {
-            return i !== action.index;
-          })
-        });
-      }
+      case ADD_POST_SUCCESS:
+        {
+          draft.isAddingPost = false;
+          draft.mainPosts.unshift(action.data);
+          draft.postAdded = true;
+          draft.imagePaths = [];
+          break;
+        }
 
-    case ADD_POST_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isAddingPost: true,
-          addPostErrorReason: '',
-          postAdded: false
-        });
-      }
+      case ADD_POST_FAILURE:
+        {
+          draft.isAddingPost = false;
+          draft.addPostErrorReason = action.error;
+          break;
+        }
 
-    case ADD_POST_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isAddingPost: false,
-          mainPosts: [action.data].concat(Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(state.mainPosts)),
-          postAdded: true,
-          imagePaths: []
-        });
-      }
+      case ADD_COMMENT_REQUEST:
+        {
+          draft.isAddingComment = true;
+          draft.addCommentErrorReason = '';
+          draft.commentAdded = false;
+          break;
+        }
 
-    case ADD_POST_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isAddingPost: false,
-          addPostErrorReason: action.error
-        });
-      }
+      case ADD_COMMENT_SUCCESS:
+        {
+          var postIndex = draft.mainPosts.findIndex(function (v) {
+            return v.id === action.data.postId;
+          });
+          draft.mainPosts[postIndex].Comments.push(action.data.comment);
+          draft.isAddingComment = false;
+          draft.commentAdded = true;
+          break;
+        }
 
-    case ADD_COMMENT_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isAddingComment: true,
-          addCommentErrorReason: '',
-          commentAdded: false
-        });
-      }
+      case ADD_COMMENT_FAILURE:
+        {
+          draft.isAddingComment = false;
+          draft.addingPostErrorReason = action.error;
+          break;
+        }
 
-    case ADD_COMMENT_SUCCESS:
-      {
-        var postIndex = state.mainPosts.findIndex(function (v) {
-          return v.id === action.data.postId;
-        }); // action: comment에 대한 action
+      case LOAD_COMMENTS_SUCCESS:
+        {
+          var _postIndex = draft.mainPosts.findIndex(function (v) {
+            return v.id === action.data.postId;
+          });
 
-        var post = state.mainPosts[postIndex];
-        var Comments = [].concat(Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(post.Comments), [action.data.comment]);
+          draft.mainPosts[_postIndex].Comments = action.data.comments;
+          break;
+        }
 
-        var mainPosts = Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(state.mainPosts);
+      case LOAD_MAIN_POSTS_REQUEST:
+      case LOAD_HASHTAG_POSTS_REQUEST:
+      case LOAD_USER_POSTS_REQUEST:
+        {
+          draft.mainPosts = !action.lastId ? [] : draft.mainPosts;
+          draft.hasMorePost = action.lastId ? draft.hasMorePost : true;
+          break;
+        }
 
-        mainPosts[postIndex] = Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, post, {
-          Comments: Comments
-        });
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isAddingComment: false,
-          mainPosts: mainPosts,
-          commentAdded: true
-        });
-      }
+      case LOAD_MAIN_POSTS_SUCCESS:
+      case LOAD_HASHTAG_POSTS_SUCCESS:
+      case LOAD_USER_POSTS_SUCCESS:
+        {
+          action.data.forEach(function (d) {
+            draft.mainPosts.push(d);
+          });
+          draft.hasMorePost = action.data.length === 10;
+          break;
+        }
 
-    case ADD_COMMENT_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isAddingComment: false,
-          addCommentErrorReason: action.error
-        });
-      }
+      case LOAD_MAIN_POSTS_FAILURE:
+      case LOAD_HASHTAG_POSTS_FAILURE:
+      case LOAD_USER_POSTS_FAILURE:
+        {
+          break;
+        }
 
-    case LOAD_COMMENTS_SUCCESS:
-      {
-        var _postIndex = state.mainPosts.findIndex(function (v) {
-          return v.id === action.data.postId;
-        });
+      case LIKE_POST_REQUEST:
+        {
+          break;
+        }
 
-        var _post = state.mainPosts[_postIndex];
-        var _Comments = action.data.comments;
+      case LIKE_POST_SUCCESS:
+        {
+          var _postIndex2 = draft.mainPosts.findIndex(function (v) {
+            return v.id === action.data.postId;
+          });
 
-        var _mainPosts = Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(state.mainPosts);
+          draft.mainPosts[_postIndex2].Likers.unshift({
+            id: action.data.userId
+          });
 
-        _mainPosts[_postIndex] = Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, _post, {
-          Comments: _Comments
-        });
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          mainPosts: _mainPosts
-        });
-      }
+          break;
+        }
 
-    case LOAD_MAIN_POSTS_REQUEST:
-    case LOAD_HASHTAG_POSTS_REQUEST:
-    case LOAD_USER_POSTS_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          mainPosts: action.lastId === 0 ? [] : state.mainPosts,
-          hasMorePost: action.lastId ? state.hasMorePost : true
-        });
-      }
+      case LIKE_POST_FAILURE:
+        {
+          break;
+        }
 
-    case LOAD_MAIN_POSTS_SUCCESS:
-    case LOAD_HASHTAG_POSTS_SUCCESS:
-    case LOAD_USER_POSTS_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          mainPosts: state.mainPosts.concat(action.data),
-          // 지난 게시글에 추가
-          hasMorePost: action.data.length === 10
-        });
-      }
+      case UNLIKE_POST_REQUEST:
+        {
+          break;
+        }
 
-    case LOAD_MAIN_POSTS_FAILURE:
-    case LOAD_HASHTAG_POSTS_FAILURE:
-    case LOAD_USER_POSTS_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
+      case UNLIKE_POST_SUCCESS:
+        {
+          var _postIndex3 = draft.mainPosts.findIndex(function (v) {
+            return v.id === action.data.postId;
+          });
 
-    case LIKE_POST_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
+          var likeIndex = draft.mainPosts[_postIndex3].Likers.findIndex(function (v) {
+            return v.id === action.data.userId;
+          });
 
-    case LIKE_POST_SUCCESS:
-      {
-        var _postIndex2 = state.mainPosts.findIndex(function (v) {
-          return v.id === action.data.postId;
-        });
+          draft.mainPosts[_postIndex3].Likers.splice(likeIndex, 1);
 
-        var _post2 = state.mainPosts[_postIndex2];
-        var Likers = [{
-          id: action.data.userId
-        }].concat(Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(_post2.Likers));
+          break;
+        }
 
-        var _mainPosts2 = Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(state.mainPosts);
+      case UNLIKE_POST_FAILURE:
+        {
+          break;
+        }
 
-        _mainPosts2[_postIndex2] = Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, _post2, {
-          Likers: Likers
-        });
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          mainPosts: _mainPosts2
-        });
-      }
+      case RETWEET_REQUEST:
+        {
+          break;
+        }
 
-    case LIKE_POST_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
+      case RETWEET_SUCCESS:
+        {
+          draft.mainPosts.unshift(action.data);
+          break;
+        }
 
-    case UNLIKE_POST_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
+      case RETWEET_FAILURE:
+        {
+          break;
+        }
 
-    case UNLIKE_POST_SUCCESS:
-      {
-        var _postIndex3 = state.mainPosts.findIndex(function (v) {
-          return v.id === action.data.postId;
-        });
+      case REMOVE_POST_REQUEST:
+        {
+          break;
+        }
 
-        var _post3 = state.mainPosts[_postIndex3];
+      case REMOVE_POST_SUCCESS:
+        {
+          var _index = draft.mainPosts.findIndex(function (v) {
+            return v.id === action.data;
+          });
 
-        var _Likers = _post3.Likers.filter(function (v) {
-          return v.id !== action.data.userId;
-        });
+          draft.mainPosts.splice(_index, 1);
+          break;
+        }
 
-        var _mainPosts3 = Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(state.mainPosts);
+      case REMOVE_POST_FAILURE:
+        {
+          break;
+        }
 
-        _mainPosts3[_postIndex3] = Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, _post3, {
-          Likers: _Likers
-        });
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          mainPosts: _mainPosts3
-        });
-      }
+      case LOAD_POST_SUCCESS:
+        {
+          draft.singlePost = action.data;
+          break;
+        }
 
-    case UNLIKE_POST_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-
-    case RETWEET_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-
-    case RETWEET_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          mainPosts: [action.data].concat(Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(state.mainPosts))
-        });
-      }
-
-    case RETWEET_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-
-    case REMOVE_POST_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-
-    case REMOVE_POST_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          mainPosts: state.mainPosts.filter(function (v) {
-            return v.id !== action.data;
-          })
-        });
-      }
-
-    case REMOVE_POST_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-
-    default:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-  }
+      default:
+        {
+          break;
+        }
+    }
+  });
 });
 
 /***/ }),
@@ -6419,6 +6391,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "REMOVE_POST_OF_ME", function() { return REMOVE_POST_OF_ME; });
 /* harmony import */ var _babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/toConsumableArray */ "./node_modules/@babel/runtime-corejs2/helpers/esm/toConsumableArray.js");
 /* harmony import */ var _babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/objectSpread */ "./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js");
+/* harmony import */ var immer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! immer */ "immer");
+/* harmony import */ var immer__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(immer__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 var initialState = {
@@ -6490,262 +6465,260 @@ var REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME'; //= =실제 액션=================
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
   var action = arguments.length > 1 ? arguments[1] : undefined;
-
-  switch (action.type) {
-    case LOG_IN_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isLoggingIn: true,
-          logInErrorReason: ''
-        });
-      }
-
-    case LOG_IN_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isLoggingIn: false,
-          me: action.data,
-          isLoading: false
-        });
-      }
-
-    case LOG_IN_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isLoggingIn: false,
-          logInErrorReason: action.error,
-          me: null
-        });
-      }
-
-    case LOG_OUT_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isLoggingOut: true
-        });
-      }
-
-    case LOG_OUT_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isLoggingOut: false,
-          me: null
-        });
-      }
-
-    case SIGN_UP_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isSigningUp: true,
-          isSignedUp: false,
-          signUpErrorReason: ''
-        });
-      }
-
-    case SIGN_UP_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isSigningUp: false,
-          isSignedUp: true
-        });
-      }
-
-    case SIGN_UP_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isSigningUp: false,
-          signUpErrorReason: action.error
-        });
-      }
-
-    case LOAD_USER_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-
-    case LOAD_USER_SUCCESS:
-      {
-        if (action.me) {
+  return immer__WEBPACK_IMPORTED_MODULE_2___default()(state, function (draft) {
+    switch (action.type) {
+      case LOG_IN_REQUEST:
+        {
           return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-            me: action.data // 내 정보
+            isLoggingIn: true,
+            logInErrorReason: ''
+          });
+        }
+
+      case LOG_IN_SUCCESS:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            isLoggingIn: false,
+            me: action.data,
+            isLoading: false
+          });
+        }
+
+      case LOG_IN_FAILURE:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            isLoggingIn: false,
+            logInErrorReason: action.error,
+            me: null
+          });
+        }
+
+      case LOG_OUT_REQUEST:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            isLoggingOut: true
+          });
+        }
+
+      case LOG_OUT_SUCCESS:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            isLoggingOut: false,
+            me: null
+          });
+        }
+
+      case SIGN_UP_REQUEST:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            isSigningUp: true,
+            isSignedUp: false,
+            signUpErrorReason: ''
+          });
+        }
+
+      case SIGN_UP_SUCCESS:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            isSigningUp: false,
+            isSignedUp: true
+          });
+        }
+
+      case SIGN_UP_FAILURE:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            isSigningUp: false,
+            signUpErrorReason: action.error
+          });
+        }
+
+      case LOAD_USER_REQUEST:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        }
+
+      case LOAD_USER_SUCCESS:
+        {
+          if (action.me) {
+            return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+              me: action.data // 내 정보
+
+            });
+          }
+
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            userInfo: action.data // 남의 정보
 
           });
         }
 
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          userInfo: action.data // 남의 정보
+      case LOAD_USER_FAILURE:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        }
 
-        });
-      }
+      case FOLLOW_USER_REQUEST:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        }
 
-    case LOAD_USER_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
+      case FOLLOW_USER_SUCCESS:
+        {
+          draft.me.Followings.unshift({
+            id: action.data
+          });
+          break;
+        }
 
-    case FOLLOW_USER_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
+      case FOLLOW_USER_FAILURE:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        }
 
-    case FOLLOW_USER_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
-            Followings: [{
-              id: action.data
-            }].concat(Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(state.me.Followings))
-          })
-        });
-      }
+      case UNFOLLOW_USER_REQUEST:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        }
 
-    case FOLLOW_USER_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-
-    case UNFOLLOW_USER_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-
-    case UNFOLLOW_USER_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
-            Followings: state.me.Followings.filter(function (v) {
+      case UNFOLLOW_USER_SUCCESS:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
+              Followings: state.me.Followings.filter(function (v) {
+                return v.id !== action.data;
+              })
+            }),
+            followingList: state.followingList.filter(function (v) {
               return v.id !== action.data;
             })
-          }),
-          followingList: state.followingList.filter(function (v) {
-            return v.id !== action.data;
-          })
-        });
-      }
+          });
+        }
 
-    case UNFOLLOW_USER_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
+      case UNFOLLOW_USER_FAILURE:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        }
 
-    case ADD_POST_TO_ME:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
-            Posts: [{
-              id: action.data
-            }].concat(Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(state.me.Posts))
-          })
-        });
-      }
+      case ADD_POST_TO_ME:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
+              Posts: [{
+                id: action.data
+              }].concat(Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(state.me.Posts))
+            })
+          });
+        }
 
-    case REMOVE_POST_OF_ME:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
-            Posts: state.me.Posts.filter(function (v) {
+      case REMOVE_POST_OF_ME:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
+              Posts: state.me.Posts.filter(function (v) {
+                return v.id !== action.data;
+              })
+            })
+          });
+        }
+
+      case LOAD_FOLLOWERS_REQUEST:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            hasMoreFollower: action.offset ? state.hasMoreFollower : true // 처음 데이터를 가져올 때는 더보기 버튼 보여주기
+
+          });
+        }
+
+      case LOAD_FOLLOWERS_SUCCESS:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            followerList: state.followerList.concat(action.data),
+            hasMoreFollower: action.data.length === 3
+          });
+        }
+
+      case LOAD_FOLLOWERS_FAILURE:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        }
+
+      case LOAD_FOLLOWINGS_REQUEST:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            hasMoreFollowing: action.offset ? state.hasMoreFollowing : true
+          });
+        }
+
+      case LOAD_FOLLOWINGS_SUCCESS:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            followingList: state.followingList.concat(action.data),
+            hasMoreFollowing: action.data.length === 3
+          });
+        }
+
+      case LOAD_FOLLOWINGS_FAILURE:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        }
+
+      case REMOVE_FOLLOWER_REQUEST:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        }
+
+      case REMOVE_FOLLOWER_SUCCESS:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
+              Followers: state.me.Followers.filter(function (v) {
+                return v.id !== action.data;
+              })
+            }),
+            followerList: state.followerList.filter(function (v) {
               return v.id !== action.data;
             })
-          })
-        });
-      }
+          });
+        }
 
-    case LOAD_FOLLOWERS_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          hasMoreFollower: action.offset ? state.hasMoreFollower : true // 처음 데이터를 가져올 때는 더보기 버튼 보여주기
+      case REMOVE_FOLLOWER_FAILURE:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        }
 
-        });
-      }
+      case EDIT_NICKNAME_REQUEST:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            isEditingNickname: true,
+            editNicknameErrorReason: ''
+          });
+        }
 
-    case LOAD_FOLLOWERS_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          followerList: state.followerList.concat(action.data),
-          hasMoreFollower: action.data.length === 3
-        });
-      }
-
-    case LOAD_FOLLOWERS_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-
-    case LOAD_FOLLOWINGS_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          hasMoreFollowing: action.offset ? state.hasMoreFollowing : true
-        });
-      }
-
-    case LOAD_FOLLOWINGS_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          followingList: state.followingList.concat(action.data),
-          hasMoreFollowing: action.data.length === 3
-        });
-      }
-
-    case LOAD_FOLLOWINGS_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-
-    case REMOVE_FOLLOWER_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-
-    case REMOVE_FOLLOWER_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
-            Followers: state.me.Followers.filter(function (v) {
-              return v.id !== action.data;
+      case EDIT_NICKNAME_SUCCESS:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            isEditingNickname: false,
+            me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
+              nickname: action.data
             })
-          }),
-          followerList: state.followerList.filter(function (v) {
-            return v.id !== action.data;
-          })
-        });
-      }
+          });
+        }
 
-    case REMOVE_FOLLOWER_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
+      case EDIT_NICKNAME_FAILURE:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
+            isEditingNickname: false,
+            editNicknameErrorReason: action.error
+          });
+        }
 
-    case EDIT_NICKNAME_REQUEST:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isEditingNickname: true,
-          editNicknameErrorReason: ''
-        });
-      }
-
-    case EDIT_NICKNAME_SUCCESS:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isEditingNickname: false,
-          me: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.me, {
-            nickname: action.data
-          })
-        });
-      }
-
-    case EDIT_NICKNAME_FAILURE:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state, {
-          isEditingNickname: false,
-          editNicknameErrorReason: action.error
-        });
-      }
-
-    default:
-      {
-        return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
-      }
-  }
+      default:
+        {
+          return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state);
+        }
+    }
+  });
 });
 
 /***/ }),
@@ -6757,7 +6730,7 @@ var REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME'; //= =실제 액션=================
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\react-nodebird\ch7\front\pages\index.js */"./pages/index.js");
+module.exports = __webpack_require__(/*! C:\react-git\ch7\front\pages\index.js */"./pages/index.js");
 
 
 /***/ }),
@@ -6770,6 +6743,17 @@ module.exports = __webpack_require__(/*! C:\react-nodebird\ch7\front\pages\index
 /***/ (function(module, exports) {
 
 module.exports = require("antd");
+
+/***/ }),
+
+/***/ "immer":
+/*!************************!*\
+  !*** external "immer" ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("immer");
 
 /***/ }),
 
