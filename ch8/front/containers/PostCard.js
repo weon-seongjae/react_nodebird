@@ -1,4 +1,4 @@
-import React, { useCallback, useState, memo, useEffect, useRef } from 'react';
+import React, { memo, useCallback, useState, useRef, useEffect } from 'react';
 import {
   Avatar, Button, Card, Comment, Icon, List, Popover,
 } from 'antd';
@@ -17,9 +17,9 @@ import {
 } from '../reducers/post';
 import PostImages from '../components/PostImages';
 import PostCardContent from '../components/PostCardContent';
+import { FOLLOW_USER_REQUEST, UNFOLLOW_USER_REQUEST } from '../reducers/user';
 import CommentForm from './CommentForm';
 import FollowButton from '../components/FollowButton';
-import {FOLLOW_USER_REQUEST, UNFOLLOW_USER_REQUEST} from "../reducers/user";
 
 moment.locale('ko');
 
@@ -99,7 +99,7 @@ const PostCard = memo(({ post }) => {
       type: REMOVE_POST_REQUEST,
       data: userId,
     });
-  }, []);
+  });
 
   return (
     <CardWrapper>
@@ -134,13 +134,14 @@ const PostCard = memo(({ post }) => {
           </Popover>,
         ]}
         title={post.RetweetId ? `${post.User.nickname}님이 리트윗하셨습니다.` : null}
-        extra={<FollowButton me={id} post={post} onUnfollow={onUnfollow} onFollow={onFollow} />}
+        extra={<FollowButton post={post} onUnfollow={onUnfollow} onFollow={onFollow} />}
       >
         {post.RetweetId && post.Retweet
           ? (
             <Card
               cover={post.Retweet.Images[0] && <PostImages images={post.Retweet.Images} />}
             >
+              <span style={{ float: 'right' }}>{moment(post.createdAt).format('YYYY.MM.DD.')}</span>
               <Card.Meta
                 avatar={(
                   <Link
@@ -151,12 +152,14 @@ const PostCard = memo(({ post }) => {
                   </Link>
                 )}
                 title={post.Retweet.User.nickname}
-                description={<PostCardContent postData={post.Retweet.content} />}
+                description={<PostCardContent postData={post.Retweet.content} />} // a tag x -> Link
               />
               {moment(post.createdAt).format('YYYY.MM.DD')}
             </Card>
           )
           : (
+            <>
+              <span style={{ float: 'right' }}>{moment(post.createdAt).format('YYYY.MM.DD.')}</span>
             <Card.Meta
               avatar={(
                 <Link href={{ pathname: '/user', query: { id: post.User.id } }} as={`/user/${post.User.id}`}>
@@ -166,6 +169,7 @@ const PostCard = memo(({ post }) => {
               title={post.User.nickname}
               description={<PostCardContent postData={post.content} />} // a tag x -> Link
             />
+            </>
           )}
       </Card>
       {commentFormOpened && (

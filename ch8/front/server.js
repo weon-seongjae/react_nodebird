@@ -31,21 +31,13 @@ app.prepare().then(() => {
     },
   }));
 
-  server.get('/post/:id', (req, res) => {
-    return app.render(req, res, '/post', { id: req.params.id });
-  });
+  server.get('/post/:id', (req, res) => app.render(req, res, '/post', { id: req.params.id }));
 
-  server.get('/hashtag/:tag', (req, res) => {
-    return app.render(req, res, '/hashtag', { tag: req.params.tag });
-  });
+  server.get('/hashtag/:tag', (req, res) => app.render(req, res, '/hashtag', { tag: req.params.tag }));
 
-  server.get('/user/:id', (req, res) => {
-    return app.render(req, res, '/user', { id: req.params.id });
-  });
+  server.get('/user/:id', (req, res) => app.render(req, res, '/user', { id: req.params.id }));
 
-  server.get('*', (req, res) => {
-    return handle(req, res);
-  });
+  server.get('*', (req, res) => handle(req, res));
 
   server.listen(3060, () => {
     console.log('next+express running on port 3060');
