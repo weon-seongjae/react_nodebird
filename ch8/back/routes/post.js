@@ -3,19 +3,24 @@ const multer = require('multer');
 const db = require('../models');
 const path = require('path');
 const { isLoggedIn } = require('./middleware');
+const multerS3 = require('multer-s3');
 
 const router = express.Router();
 
 // ===== multer 설정 =============================
+
+AWS.config.update({
+  region: 'ap-northeast-2',
+  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+});
+
 const upload = multer({
-  storage: multer.diskStorage({
-    destination(req, file, done) {
-      done(null, `uploads`); // uploads 폴더에 이미지 업로드 done(서버에러, 성공시)
-    },
-    filename(req, file, done) {
-      const ext = path.extname(file.originalname);
-      const basename = path.basename(file.originalname, ext); // 확장자를 제외한 파일이름 추출(ex. 가물이.png, ext===.png, basename===가물이
-      done(null, basename + new Date().valueOf() + ext); // filename이 같더라도 업로드 시간을 기록해서 overwrite를 방지함.
+  storage: multerS3({
+    s3: new AWS.S3(),
+    bucket: 'key-sns',
+    key(req, file, cb) {
+      cb(null, `original/${+new Date()}${path.basename(file.originalname)}`);
     },
   }),
   limits: { fileSize: 20 * 1024 * 1024 }, // 양 * 킬로바이트 * 킬로바이트
@@ -77,7 +82,7 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => { // POST 
 // 한 장 올릴 때: upload.single, 여러 장 올릴 때: upload.array 사용, upload.fields: 각각 이름이 다를 때, none: 이미지를 하나도 안 올린 경우
 router.post('/images', upload.array(`image`), (req, res) => {
   console.log(req.files);
-  res.json(req.files.map(v => v.filename));
+  res.json(req.files.map(v => v.location));
 });
 
 router.get('/:id', async (req, res, next) => {
