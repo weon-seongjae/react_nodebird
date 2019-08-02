@@ -6,14 +6,13 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import Router from 'next/router';
 import { SIGN_UP_REQUEST } from '../reducers/user';
+import styled from 'styled-components';
 
-const TextInput = ({ value }) => (
-  <div>{value}</div>
-);
+const SignupError = styled.div`
+  color: red;
+`;
 
-TextInput.propTypes = {
-  value: PropTypes.string,
-};
+
 // 사용자정의 hooks==================================
 export const useInput = (initValue = null) => {
   const [value, setter] = useState(initValue);
@@ -78,7 +77,6 @@ const Signup = () => {
   return (
     <>
       <Form onSubmit={onSubmit} style={{ padding: 10 }}>
-        <TextInput value="135135" />
         <div>
           <label htmlFor="user-id">아이디</label>
           <br />
@@ -104,11 +102,11 @@ const Signup = () => {
             required
             onChange={onChangePasswordCheck}
           />
-          {passwordError && <div style={{ color: 'red' }}>비밀번호가 일치하지 않습니다.</div>}
+          {passwordError && <SignupError>비밀번호가 일치하지 않습니다.</SignupError>}
         </div>
         <div>
           <Checkbox name="user-term" value={term} onChange={onChangeTerm}>제로초 말을 잘 들을 것을 동의합니다.</Checkbox>
-          {termError && <div style={{ color: 'red' }}>약관에 동의하셔야 합니다.</div>}
+          {termError && <SignupError>약관에 동의하셔야 합니다.</SignupError>}
         </div>
         <div style={{ marginTop: 10 }}>
           <Button type="primary" htmlType="submit" loading={isSigningUp}>가입하기</Button>
