@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Avatar, Card } from 'antd';
 import { LOAD_USER_POSTS_REQUEST } from '../reducers/post';
 import { LOAD_USER_REQUEST } from '../reducers/user';
@@ -48,7 +48,6 @@ const User = () => {
 
 User.getInitialProps = async (context) => { // next가 임의로 추가해준 lifecycle, getInitialProps가 제일 먼저 실행됨. 서버사이드 렌더링의 핵심
   const id = parseInt(context.query.id, 10);
-  console.log('user getInitialProps', id);
   context.store.dispatch({
     type: LOAD_USER_REQUEST,
     data: id,

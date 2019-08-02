@@ -1,8 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import {
-  Button, Checkbox, Form, Input,
-} from 'antd';
 import PropTypes from 'prop-types';
+import { Button, Checkbox, Form, Input } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import Router from 'next/router';
 import { SIGN_UP_REQUEST } from '../reducers/user';
@@ -101,8 +99,7 @@ const Signup = () => {
             value={passwordCheck}
             required
             onChange={onChangePasswordCheck}
-          />
-          {passwordError && <SignupError>비밀번호가 일치하지 않습니다.</SignupError>}
+          />{passwordError && <SignupError>비밀번호가 일치하지 않습니다.</SignupError>}
         </div>
         <div>
           <Checkbox name="user-term" value={term} onChange={onChangeTerm}>제로초 말을 잘 들을 것을 동의합니다.</Checkbox>
