@@ -1,4 +1,6 @@
-import React, { memo, useCallback, useState, useRef, useEffect } from 'react';
+import React, {
+  memo, useCallback, useState, useRef, useEffect,
+} from 'react';
 import {
   Avatar, Button, Card, Comment, Icon, List, Popover,
 } from 'antd';
@@ -160,15 +162,15 @@ const PostCard = memo(({ post }) => {
           : (
             <>
               <span style={{ float: 'right' }}>{moment(post.createdAt).format('YYYY.MM.DD.')}</span>
-            <Card.Meta
-              avatar={(
-                <Link href={{ pathname: '/user', query: { id: post.User.id } }} as={`/user/${post.User.id}`}>
-                  <a><Avatar>{post.User.nickname[0]}</Avatar></a>
-                </Link>
+              <Card.Meta
+                avatar={(
+                  <Link href={{ pathname: '/user', query: { id: post.User.id } }} as={`/user/${post.User.id}`}>
+                    <a><Avatar>{post.User.nickname[0]}</Avatar></a>
+                  </Link>
               )}
-              title={post.User.nickname}
-              description={<PostCardContent postData={post.content} />} // a tag x -> Link
-            />
+                title={post.User.nickname}
+                description={<PostCardContent postData={post.content} />}
+              />
             </>
           )}
       </Card>
