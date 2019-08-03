@@ -43,6 +43,8 @@ const NodeBird = ({ Component, store, pageProps }) => (
           name: 'og:description', content: 'weonsj의 NodeBird SNS',
         }, {
           property: 'og:type', content: 'website',
+        }, {
+          property: 'og:image', content: 'http://3.130.67.120/favicon.ico',
         }]}
         link={[{
           rel: 'shortcut icon', href: '/favicon.ico',

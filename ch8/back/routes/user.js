@@ -11,6 +11,7 @@ router.get('/', isLoggedIn, (req, res) => { // /api/user/
   delete user.password;
   return res.json(user);
 });
+
 router.post('/', async (req, res, next) => { // POST /api/user 회원가입
   try {
     const exUser = await db.User.findOne({
@@ -32,7 +33,7 @@ router.post('/', async (req, res, next) => { // POST /api/user 회원가입
   } catch (e) {
     console.error(e);
     // 에러 처리를 여기서
-    return next(e);
+    next(e);
   }
 });
 
@@ -211,7 +212,6 @@ router.get('/:id/posts', async (req, res, next) => {
     console.error(e);
     next(e);
   }
-
 });
 
 router.patch('/nickname', isLoggedIn, async (req, res, next) => {
