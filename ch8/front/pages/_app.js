@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
 import axios from 'axios';
 import Helmet from 'react-helmet';
-import App, { Container } from 'next/app';
+import { Container } from 'next/app';
 
 import AppLayout from '../components/AppLayout';
 import reducer from '../reducers';
