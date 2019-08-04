@@ -72,25 +72,25 @@ NodeBird.propTypes = {
   pageProps: PropTypes.object.isRequired,
 };
 
-NodeBird.getInitialProps = async (context) => {
-  const { ctx, Component } = context;
-  let pageProps = {};
-  const state = ctx.store.getState();
-  const cookie = ctx.isServer ? ctx.req.headers.cookie : '';
-  axios.defaults.headers.Cookie = '';
-  if (ctx.isServer && cookie) {
-    axios.defaults.headers.Cookie = cookie;
-  }
-  if (!state.user.me) {
-    ctx.store.dispatch({
-      type: LOAD_USER_REQUEST,
-    });
-  }
-  if (Component.getInitialProps) {
-    pageProps = await Component.getInitialProps(ctx) || {};
-  }
-  return { pageProps };
-};
+// NodeBird.getInitialProps = async (context) => {
+//   const { ctx, Component } = context;
+//   let pageProps = {};
+//   const state = ctx.store.getState();
+//   const cookie = ctx.isServer ? ctx.req.headers.cookie : '';
+//   axios.defaults.headers.Cookie = '';
+//   if (ctx.isServer && cookie) {
+//     axios.defaults.headers.Cookie = cookie;
+//   }
+//   if (!state.user.me) {
+//     ctx.store.dispatch({
+//       type: LOAD_USER_REQUEST,
+//     });
+//   }
+//   if (Component.getInitialProps) {
+//     pageProps = await Component.getInitialProps(ctx) || {};
+//   }
+//   return { pageProps };
+// };
 
 const configureStore = (initialState, options) => {
   const sagaMiddleware = createSagaMiddleware();
