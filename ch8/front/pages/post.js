@@ -19,7 +19,7 @@ const Post = ({ id }) => {
         }, {
           property: 'og:description', content: singlePost.content,
         }, {
-          property: 'og:image', content: singlePost.Images[0] && `http://api.keysns.com/${singlePost.Images[0].src}`,
+          property: 'og:image', content: singlePost.Images[0] ? singlePost.Images[0].src : 'http://keysns.com/favicon.ico',
         }, {
           property: 'og:url', content: `http://keysns.com/post/${id}`,
         }]}
