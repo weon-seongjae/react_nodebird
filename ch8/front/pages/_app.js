@@ -28,7 +28,7 @@ const NodeBird = ({ Component, store, pageProps }) => {
     <Container>
       <Provider store={store}>
         <Helmet
-          title="NodeBird"
+          title="keysns"
           htmlAttributes={{ lang: 'ko' }}
           meta={[{
             charset: 'UTF-8',
@@ -38,15 +38,15 @@ const NodeBird = ({ Component, store, pageProps }) => {
           }, {
             'http-equiv': 'X-UA-Compatible', content: 'IE=edge',
           }, {
-            name: 'description', content: '제로초의 NodeBird SNS',
+            name: 'description', content: 'weonsj의 SNS',
           }, {
-            name: 'og:title', content: 'NodeBird',
+            name: 'og:title', content: 'keysns',
           }, {
-            name: 'og:description', content: '제로초의 NodeBird SNS',
+            name: 'og:description', content: 'weonsj의 SNS',
           }, {
             property: 'og:type', content: 'website',
           }, {
-            property: 'og:image', content: 'https://nodebird.com/favicon.ico',
+            property: 'og:image', content: 'https://keysns.com/favicon.ico',
           }]}
           link={[{
             rel: 'shortcut icon', href: '/favicon.ico',
