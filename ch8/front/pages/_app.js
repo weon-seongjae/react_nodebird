@@ -40,11 +40,11 @@ const NodeBird = ({ Component, store, pageProps }) => (
         }, {
           name: 'og:title', content: 'NodeBird',
         }, {
-          name: 'og:description', content: 'weonsj의 NodeBird SNS',
+          name: 'og:description', content: 'weonsj의 SNS',
         }, {
           property: 'og:type', content: 'website',
         }, {
-          property: 'og:image', content: 'http://3.130.67.120/favicon.ico',
+          property: 'og:image', content: 'http://keysns.com/favicon.ico',
         }]}
         link={[{
           rel: 'shortcut icon', href: '/favicon.ico',

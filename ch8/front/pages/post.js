@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet'; // head tag에 들어가는 것들을 관리해 주는 라이브러리
 import { LOAD_POST_REQUEST } from '../reducers/post';
-import {backUrl} from '../config/config';
+import { backUrl } from '../config/config';
 
 const Post = ({ id }) => {
   const { singlePost } = useSelector(state => state.post);
@@ -19,9 +19,9 @@ const Post = ({ id }) => {
         }, {
           property: 'og:description', content: singlePost.content,
         }, {
-          property: 'og:image', content: singlePost.Images[0] ? singlePost.Images[0].src : `http://3.130.67.120/favicon.ico`,
+          property: 'og:image', content: singlePost.Images[0] && `http://api.keysns.com/${singlePost.Images[0].src}`,
         }, {
-          property: 'og:url', content: `http://3.130.67.120/post/${id}`,
+          property: 'og:url', content: `http://keysns.com/post/${id}`,
         }]}
       />
       <div itemScope="content">{singlePost.content}</div>
