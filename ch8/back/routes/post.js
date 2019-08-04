@@ -4,6 +4,7 @@ const db = require('../models');
 const path = require('path');
 const { isLoggedIn } = require('./middleware');
 const multerS3 = require('multer-s3');
+const AWS = require('aws-sdk');
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ AWS.config.update({
 const upload = multer({
   storage: multerS3({
     s3: new AWS.S3(),
-    bucket: 'key-sns',
+    bucket: 'keysns',
     key(req, file, cb) {
       cb(null, `original/${+new Date()}${path.basename(file.originalname)}`);
     },
