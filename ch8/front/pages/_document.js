@@ -7,7 +7,7 @@ import { ServerStyleSheet } from 'styled-components';
 class MyDocument extends Document {
   static getInitialProps(context) {
     const sheet = new ServerStyleSheet();
-    const page = context.renderPage(App => props => sheet.collectStyles(<App {...props} />));
+    const page = context.renderPage((App) => (props) => sheet.collectStyles(<App {...props} />));
     const styleTags = sheet.getStyleElement();
     return { ...page, helmet: Helmet.renderStatic(), styleTags };
   }
@@ -25,6 +25,8 @@ class MyDocument extends Document {
         </head>
         <body {...bodyAttrs}>
           <Main />
+          {process.env.NODE_ENV === 'production'
+          && <script src="https://polyfill.io/v3/polyfill.min.js?features=es6,es7,es8,es9,NodeList.prototype.forEach&flags=gated" />}
           <NextScript />
         </body>
       </html>

@@ -23,18 +23,17 @@ const ImagesZoom = ({ images, onClose }) => {
             slidesToShow={1}
             slidesToScroll={1}
           >
-            {images.map(v => (
+            {images.map((v) => {
+              return (
               <ImgWrapper>
                 <img src={v.src} />
               </ImgWrapper>
-            ))}
+              );
+            })}
           </Slick>
           <Indicator>
             <div>
-              {currentSlide + 1}
-              {' '}
-/
-              {images.length}
+              {currentSlide + 1} / {images.length}
             </div>
           </Indicator>
         </div>
